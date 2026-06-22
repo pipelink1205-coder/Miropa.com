@@ -1,0 +1,89 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Superficies */
+    --color-surface: #fafaf9;
+    --color-surface-raised: #ffffff;
+    --color-surface-muted: #f4f4f5;
+
+    /* Marca — ink + acento cálido (moda / confianza) */
+    --color-ink: #18181b;
+    --color-ink-secondary: #52525b;
+    --color-ink-muted: #a1a1aa;
+    --color-accent: #c2410c;
+    --color-accent-hover: #9a3412;
+    --color-accent-soft: #fff7ed;
+    --color-trust: #0d9488;
+    --color-trust-soft: #f0fdfa;
+
+    /* Sombras premium */
+    --shadow-soft: 0 2px 16px rgb(24 24 27 / 0.06);
+    --shadow-card: 0 4px 24px rgb(24 24 27 / 0.08);
+    --shadow-elevated: 0 16px 48px rgb(24 24 27 / 0.12);
+    --shadow-nav: 0 1px 0 rgb(24 24 27 / 0.06);
+
+    --radius-card: 1.25rem;
+    --radius-pill: 9999px;
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        @apply bg-surface text-ink font-sans;
+    }
+
+    ::selection {
+        @apply bg-accent-soft text-accent;
+    }
+
+    :focus-visible {
+        @apply outline-2 outline-offset-2 outline-accent;
+    }
+}
+
+@layer components {
+    .container-app {
+        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-hover focus-visible:outline-accent;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-zinc-200 bg-surface-raised px-6 py-3 text-sm font-semibold text-ink transition hover:border-zinc-300 hover:bg-surface-muted focus-visible:outline-accent;
+    }
+
+    .input-search {
+        @apply w-full rounded-full border border-zinc-200 bg-surface-raised px-5 py-3 text-sm text-ink placeholder:text-ink-muted transition focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20;
+    }
+
+    .card-premium {
+        @apply rounded-[var(--radius-card)] bg-surface-raised shadow-[var(--shadow-card)] transition;
+    }
+
+    .section-padding {
+        @apply py-16 md:py-24;
+    }
+
+    .text-display {
+        @apply text-4xl font-bold tracking-tight text-ink md:text-5xl lg:text-6xl;
+    }
+
+    .text-section-title {
+        @apply text-2xl font-bold tracking-tight text-ink md:text-3xl;
+    }
+}
