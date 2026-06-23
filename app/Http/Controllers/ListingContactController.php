@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\MessageBroadcaster;
 use App\Models\Conversation;
 use App\Models\Listing;
+use App\Support\MessageBroadcaster;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 

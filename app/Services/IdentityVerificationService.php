@@ -20,20 +20,23 @@ class IdentityVerificationService
     /**
      * @throws ValidationException
      */
-    public function submit(User $user, string $documentType, UploadedFile $document): IdentityVerification
-    {
+    public function submit(
+        User $user,
+        string $documentType,
+        UploadedFile $documentFront,
+        UploadedFile $documentBack,
+    ): IdentityVerification {
         if ($this->hasActiveVerification($user)) {
             throw ValidationException::withMessages([
-                'document' => 'Ya tienes una verificación pendiente o aprobada.',
+                'document_front' => 'Ya tienes una verificación pendiente o aprobada.',
             ]);
         }
-
-        $path = $document->store('identity-docs', 'local');
 
         return IdentityVerification::create([
             'user_id' => $user->id,
             'document_type' => $documentType,
-            'document_path' => $path,
+            'document_path' => $documentFront->store('identity-docs', 'local'),
+            'document_back_path' => $documentBack->store('identity-docs', 'local'),
             'status' => 'pending',
         ]);
     }

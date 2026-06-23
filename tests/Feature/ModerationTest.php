@@ -70,7 +70,8 @@ class ModerationTest extends TestCase
         $this->actingAs($user)
             ->postJson('/api/v1/identity-verifications', [
                 'document_type' => 'cedula',
-                'document' => UploadedFile::fake()->image('cedula.jpg'),
+                'document_front' => UploadedFile::fake()->image('cedula-frente.jpg'),
+                'document_back' => UploadedFile::fake()->image('cedula-reverso.jpg'),
             ])
             ->assertStatus(201);
 
@@ -96,7 +97,8 @@ class ModerationTest extends TestCase
         $this->actingAs($user)
             ->postJson('/api/v1/identity-verifications', [
                 'document_type' => 'cedula',
-                'document' => UploadedFile::fake()->image('cedula2.jpg'),
+                'document_front' => UploadedFile::fake()->image('cedula-frente.jpg'),
+                'document_back' => UploadedFile::fake()->image('cedula-reverso.jpg'),
             ])
             ->assertStatus(422);
     }

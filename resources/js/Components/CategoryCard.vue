@@ -2,6 +2,7 @@
     <Link
         :href="href"
         class="group relative block h-[220px] overflow-hidden rounded-[var(--radius-card)] shadow-[var(--shadow-soft)] transition duration-400 hover:-translate-y-2 hover:shadow-[var(--shadow-elevated)] focus-visible:outline-offset-4 sm:h-[260px]"
+        :class="{ 'opacity-90 saturate-75': muted }"
     >
         <img
             :src="image"
@@ -31,5 +32,6 @@ defineProps({
     name: { type: String, required: true },
     image: { type: String, required: true },
     href: { type: String, required: true },
+    muted: { type: Boolean, default: false },
 });
 </script>

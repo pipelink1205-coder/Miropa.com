@@ -13,7 +13,8 @@ class ConditionFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->randomElement(['Nuevo', 'Como nuevo', 'Buen estado', 'Aceptable']),
+            'name' => fake()->randomElement(['Como nuevo', 'Buen estado', 'Con detalles']),
+            'slug' => fake()->unique()->slug(2),
             'description' => fake()->sentence(),
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsurePhoneIsVerified;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -19,7 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'verified.phone' => \App\Http\Middleware\EnsurePhoneIsVerified::class,
+            'verified.phone' => EnsurePhoneIsVerified::class,
         ]);
 
         $middleware->validateCsrfTokens(except: [

@@ -20,10 +20,17 @@ class Listing extends Model
         'category_id',
         'condition_id',
         'location_id',
+        'brand_id',
         'title',
         'slug',
         'description',
         'price',
+        'size',
+        'size_note',
+        'color',
+        'listing_mode',
+        'listing_type',
+        'items_count',
         'is_negotiable',
         'currency',
         'status',
@@ -60,6 +67,11 @@ class Listing extends Model
     public function condition(): BelongsTo
     {
         return $this->belongsTo(Condition::class);
+    }
+
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
     }
 
     public function location(): BelongsTo
@@ -100,6 +112,21 @@ class Listing extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function universes(): BelongsToMany
+    {
+        return $this->belongsToMany(Universe::class, 'listing_universe')->withTimestamps();
+    }
+
+    public function lotItems(): HasMany
+    {
+        return $this->hasMany(LotItem::class)->orderBy('position');
+    }
+
+    public function isLote(): bool
+    {
+        return $this->listing_type === 'lote';
     }
 
     public function toSearchableArray(): array

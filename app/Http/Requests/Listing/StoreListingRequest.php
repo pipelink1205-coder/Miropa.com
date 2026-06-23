@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Listing;
 
+use App\Support\FashionListingRules;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class StoreListingRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class StoreListingRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        return array_merge([
             'category_id' => ['required', 'integer', 'exists:categories,id'],
             'condition_id' => ['required', 'integer', 'exists:conditions,id'],
             'location_id' => ['nullable', 'integer', 'exists:locations,id'],
@@ -28,7 +30,18 @@ class StoreListingRequest extends FormRequest
             'attributes.*.value' => ['required_with:attributes', 'string', 'max:200'],
             'images' => ['nullable', 'array', 'max:8'],
             'images.*' => ['image', 'mimes:jpeg,png,webp', 'max:5120'],
-        ];
+        ], FashionListingRules::baseRules());
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator): void {
+            FashionListingRules::validateFashionFields(
+                $validator,
+                $this->integer('category_id') ?: null,
+                $this->all(),
+            );
+        });
     }
 
     public function messages(): array

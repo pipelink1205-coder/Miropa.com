@@ -18,7 +18,7 @@ class ListingTest extends TestCase
 
     private function seedBaseData(): array
     {
-        $category = Category::factory()->create(['slug' => 'electronica']);
+        $category = Category::query()->where('slug', 'calzado-tenis-y-zapatillas')->firstOrFail();
         $condition = Condition::factory()->create();
 
         return compact('category', 'condition');
@@ -180,6 +180,20 @@ class ListingTest extends TestCase
         Storage::disk('public')->assertMissing($image->path);
     }
 
+    public function test_authenticated_user_can_access_create_page_with_categories(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/listings/create')
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('Listings/Create')
+                ->has('fashionCategories', 3)
+                ->has('otherCategories', 9)
+            );
+    }
+
     public function test_authenticated_owner_can_access_edit_page(): void
     {
         ['category' => $cat, 'condition' => $cond] = $this->seedBaseData();
@@ -195,6 +209,7 @@ class ListingTest extends TestCase
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('Listings/Edit')
+                ->has('fashionCategories')
                 ->has('listing', fn ($prop) => $prop
                     ->where('id', $listing->id)
                     ->where('title', $listing->title)

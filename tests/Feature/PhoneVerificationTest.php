@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
+use App\Models\Condition;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -44,8 +46,8 @@ class PhoneVerificationTest extends TestCase
     public function test_api_blocks_listing_creation_without_phone_verification(): void
     {
         $user = User::factory()->withoutPhoneVerification()->create();
-        $category = \App\Models\Category::factory()->create();
-        $condition = \App\Models\Condition::factory()->create();
+        $category = Category::factory()->create();
+        $condition = Condition::factory()->create();
 
         $this->actingAs($user, 'sanctum')
             ->postJson('/api/v1/listings', [

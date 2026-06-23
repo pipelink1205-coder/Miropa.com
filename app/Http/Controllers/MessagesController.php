@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\MessageSent;
 use App\Http\Requests\Message\SendMessageRequest;
 use App\Http\Resources\MessageResource;
 use App\Models\Conversation;
 use App\Support\MessageBroadcaster;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Inertia\Inertia;
@@ -45,7 +45,7 @@ class MessagesController extends Controller
         ]);
     }
 
-    public function storeMessage(SendMessageRequest $request, Conversation $conversation): JsonResponse|\Illuminate\Http\RedirectResponse
+    public function storeMessage(SendMessageRequest $request, Conversation $conversation): JsonResponse|RedirectResponse
     {
         Gate::authorize('view', $conversation);
 

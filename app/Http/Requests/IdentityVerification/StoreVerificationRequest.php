@@ -15,7 +15,8 @@ class StoreVerificationRequest extends FormRequest
     {
         return [
             'document_type' => ['required', 'string', 'in:cedula,passport,foreign_id'],
-            'document' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'document_front' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+            'document_back' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
         ];
     }
 
@@ -24,9 +25,12 @@ class StoreVerificationRequest extends FormRequest
         return [
             'document_type.required' => 'Selecciona el tipo de documento.',
             'document_type.in' => 'El tipo de documento no es válido.',
-            'document.required' => 'Debes adjuntar una foto o PDF de tu documento.',
-            'document.mimes' => 'El archivo debe ser JPG, PNG o PDF.',
-            'document.max' => 'El archivo no puede superar 5 MB.',
+            'document_front.required' => 'Debes adjuntar la foto del frente del documento.',
+            'document_front.mimes' => 'El frente debe ser JPG, PNG o PDF.',
+            'document_front.max' => 'El archivo del frente no puede superar 5 MB.',
+            'document_back.required' => 'Debes adjuntar la foto del reverso del documento.',
+            'document_back.mimes' => 'El reverso debe ser JPG, PNG o PDF.',
+            'document_back.max' => 'El archivo del reverso no puede superar 5 MB.',
         ];
     }
 }

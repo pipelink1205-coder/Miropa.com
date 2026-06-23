@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -7,9 +8,10 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\SocialAuthController;
-use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FashionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\IdentityDocumentController;
 use App\Http\Controllers\IdentityVerificationController;
 use App\Http\Controllers\ListingContactController;
 use App\Http\Controllers\ListingController;
@@ -65,6 +67,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/cuenta/verificar-identidad', [IdentityVerificationController::class, 'store'])
         ->middleware('throttle:3,1')
         ->name('identity.verify.store');
+
+    Route::get('/admin/verificaciones/{verification}/documento/{side}', [IdentityDocumentController::class, 'show'])
+        ->whereIn('side', ['front', 'back'])
+        ->middleware('can:admin')
+        ->name('identity.document');
 });
 
 // Auth — acciones del marketplace (email + celular verificados)
@@ -80,6 +87,12 @@ Route::middleware(['auth', 'verified', 'verified.phone'])->group(function () {
     Route::get('/mensajes/{conversation}/messages', [MessagesController::class, 'fetchMessages'])->name('messages.fetch');
     Route::post('/anuncios/{listing:slug}/contactar', ListingContactController::class)->name('listings.contact');
 });
+
+Route::get('/moda/{department}', [FashionController::class, 'department'])
+    ->whereIn('department', ['mujer', 'hombre', 'ninos'])
+    ->name('fashion.department');
+Route::get('/moda/universos/{universe}', [FashionController::class, 'universe'])
+    ->name('fashion.universe');
 
 // Rutas públicas
 Route::get('/anuncios', SearchController::class)->name('search');

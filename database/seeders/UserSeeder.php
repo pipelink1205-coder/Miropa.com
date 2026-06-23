@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'username' => 'diana_demo',
             'email' => 'demo@marketplace.test',
             'verification_level' => 'id_document',
+            'is_admin' => true,
         ]);
 
         Profile::factory()->create([

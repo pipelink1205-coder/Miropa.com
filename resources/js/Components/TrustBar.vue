@@ -1,14 +1,14 @@
 <template>
     <section class="border-y border-zinc-200/80 bg-surface-raised" aria-label="Señales de confianza">
-        <div class="container-app py-6">
-            <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="container-app py-4 md:py-5">
+            <ul class="grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
                 <li
                     v-for="item in items"
                     :key="item.title"
                     class="flex items-start gap-4"
                 >
                     <div
-                        class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl"
+                        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
                         :class="item.iconBg"
                         aria-hidden="true"
                     >
@@ -66,8 +66,8 @@ const items = [
         iconColor: 'text-amber-600',
     },
     {
-        title: 'Precios claros',
-        description: 'Publicaciones con precio visible y condición.',
+        title: 'Dos formas de comprar',
+        description: 'Moda con compra protegida Mi Ropa; otros anuncios solo por chat.',
         icon: TagIcon,
         iconBg: 'bg-zinc-100',
         iconColor: 'text-ink-secondary',

@@ -12,10 +12,15 @@ use Filament\Tables\Table;
 class IdentityVerificationResource extends Resource
 {
     protected static ?string $model = IdentityVerification::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-identification';
+
     protected static ?string $navigationLabel = 'Verificaciones';
+
     protected static ?string $modelLabel = 'Verificación';
+
     protected static ?string $pluralModelLabel = 'Verificaciones de identidad';
+
     protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
@@ -36,23 +41,23 @@ class IdentityVerificationResource extends Resource
                 Tables\Columns\TextColumn::make('document_type')
                     ->label('Tipo de documento')
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'cedula'     => 'Cédula',
-                        'passport'   => 'Pasaporte',
+                        'cedula' => 'Cédula',
+                        'passport' => 'Pasaporte',
                         'foreign_id' => 'Cédula extranjera',
-                        default      => $state,
+                        default => $state,
                     }),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Estado')
                     ->colors([
                         'warning' => 'pending',
                         'success' => 'approved',
-                        'danger'  => 'rejected',
+                        'danger' => 'rejected',
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'pending'  => 'Pendiente',
+                        'pending' => 'Pendiente',
                         'approved' => 'Aprobada',
                         'rejected' => 'Rechazada',
-                        default    => $state,
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Enviado')
@@ -67,12 +72,29 @@ class IdentityVerificationResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Estado')
                     ->options([
-                        'pending'  => 'Pendiente',
+                        'pending' => 'Pendiente',
                         'approved' => 'Aprobada',
                         'rejected' => 'Rechazada',
                     ]),
             ])
             ->actions([
+                Tables\Actions\Action::make('ver_frente')
+                    ->label('Ver frente')
+                    ->icon('heroicon-o-eye')
+                    ->url(fn (IdentityVerification $record) => route('identity.document', [
+                        'verification' => $record,
+                        'side' => 'front',
+                    ]))
+                    ->openUrlInNewTab()
+                    ->visible(fn (IdentityVerification $record) => (bool) $record->document_path),
+                Tables\Actions\Action::make('ver_reverso')
+                    ->label('Ver reverso')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->url(fn (IdentityVerification $record) => $record->document_back_path
+                        ? route('identity.document', ['verification' => $record, 'side' => 'back'])
+                        : null)
+                    ->openUrlInNewTab()
+                    ->visible(fn (IdentityVerification $record) => (bool) $record->document_back_path),
                 Tables\Actions\Action::make('aprobar')
                     ->label('Aprobar')
                     ->icon('heroicon-o-check-circle')
@@ -81,12 +103,12 @@ class IdentityVerificationResource extends Resource
                     ->visible(fn (IdentityVerification $record) => $record->status === 'pending')
                     ->action(function (IdentityVerification $record) {
                         $record->update([
-                            'status'      => 'approved',
+                            'status' => 'approved',
                             'reviewed_by' => auth()->id(),
                             'reviewed_at' => now(),
                         ]);
                         $record->user->update([
-                            'is_verified'        => true,
+                            'is_verified' => true,
                             'verification_level' => 'id_document',
                         ]);
                     }),
@@ -97,7 +119,7 @@ class IdentityVerificationResource extends Resource
                     ->requiresConfirmation()
                     ->visible(fn (IdentityVerification $record) => $record->status === 'pending')
                     ->action(fn (IdentityVerification $record) => $record->update([
-                        'status'      => 'rejected',
+                        'status' => 'rejected',
                         'reviewed_by' => auth()->id(),
                         'reviewed_at' => now(),
                     ])),
@@ -115,6 +137,7 @@ class IdentityVerificationResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $count = static::getModel()::where('status', 'pending')->count();
+
         return $count > 0 ? (string) $count : null;
     }
 

@@ -13,10 +13,15 @@ use Filament\Tables\Table;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-users';
+
     protected static ?string $navigationLabel = 'Usuarios';
+
     protected static ?string $modelLabel = 'Usuario';
+
     protected static ?string $pluralModelLabel = 'Usuarios';
+
     protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
@@ -33,9 +38,9 @@ class UserResource extends Resource
                 Forms\Components\Select::make('status')
                     ->label('Estado')
                     ->options([
-                        'active'    => 'Activo',
+                        'active' => 'Activo',
                         'suspended' => 'Suspendido',
-                        'banned'    => 'Baneado',
+                        'banned' => 'Baneado',
                     ])
                     ->required(),
                 Forms\Components\Toggle::make('is_admin')->label('Es administrador'),
@@ -43,9 +48,9 @@ class UserResource extends Resource
                 Forms\Components\Select::make('verification_level')
                     ->label('Nivel de verificación')
                     ->options([
-                        'none'        => 'Ninguno',
-                        'email'       => 'Email',
-                        'phone'       => 'Teléfono',
+                        'none' => 'Ninguno',
+                        'email' => 'Email',
+                        'phone' => 'Teléfono',
                         'id_document' => 'Documento de identidad',
                     ]),
             ])->columns(2),
@@ -71,13 +76,13 @@ class UserResource extends Resource
                     ->colors([
                         'success' => 'active',
                         'warning' => 'suspended',
-                        'danger'  => 'banned',
+                        'danger' => 'banned',
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'active'    => 'Activo',
+                        'active' => 'Activo',
                         'suspended' => 'Suspendido',
-                        'banned'    => 'Baneado',
-                        default     => $state,
+                        'banned' => 'Baneado',
+                        default => $state,
                     }),
                 Tables\Columns\IconColumn::make('is_admin')
                     ->label('Admin')
@@ -94,9 +99,9 @@ class UserResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Estado')
                     ->options([
-                        'active'    => 'Activo',
+                        'active' => 'Activo',
                         'suspended' => 'Suspendido',
-                        'banned'    => 'Baneado',
+                        'banned' => 'Baneado',
                     ]),
                 Tables\Filters\TernaryFilter::make('is_admin')->label('Administrador'),
                 Tables\Filters\TernaryFilter::make('is_verified')->label('Verificado'),
@@ -115,8 +120,8 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListUsers::route('/'),
-            'edit'   => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListUsers::route('/'),
+            'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 

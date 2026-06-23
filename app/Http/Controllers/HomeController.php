@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Listing;
+use App\Models\Universe;
 use App\Models\User;
+use App\Support\CategoryVisuals;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -11,17 +13,7 @@ class HomeController extends Controller
 {
     public function __invoke(): Response
     {
-        $categories = collect(config('category_images'))
-            ->map(fn (array $category) => [
-                'name' => $category['name'],
-                'image' => asset('images/categories/'.$category['image']),
-                'url' => $category['search_category']
-                    ? route('search', ['category' => $category['search_category']])
-                    : route('search'),
-            ])
-            ->values();
-
-        $listingQuery = fn () => Listing::with(['location', 'primaryImage'])
+        $listingQuery = fn () => Listing::with(['location', 'primaryImage', 'category'])
             ->where('status', 'active');
 
         $recentListings = $listingQuery()
@@ -52,16 +44,22 @@ class HomeController extends Controller
             ])
             ->values();
 
-        $activeListingsCount = Listing::where('status', 'active')->count();
+        $fashionCategories = CategoryVisuals::fashion();
+        $otherCategories = CategoryVisuals::marketplace();
 
         return Inertia::render('Home', [
-            'categories' => $categories,
+            'fashionCategories' => $fashionCategories,
+            'otherCategories' => $otherCategories,
+            'fashionUniverses' => Universe::query()
+                ->where('is_active', true)
+                ->orderBy('position')
+                ->get(['id', 'name', 'slug', 'accent_color', 'description']),
             'recentListings' => $recentListings,
             'featuredListings' => $featuredListings,
             'featuredSellers' => $featuredSellers,
             'stats' => [
-                'active_listings' => $activeListingsCount,
-                'categories' => $categories->count(),
+                'active_listings' => Listing::where('status', 'active')->count(),
+                'categories' => count($fashionCategories),
             ],
         ]);
     }

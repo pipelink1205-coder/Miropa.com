@@ -23,6 +23,7 @@ class CategoryFactory extends Factory
             'description' => fake()->sentence(),
             'position' => fake()->numberBetween(0, 20),
             'is_active' => true,
+            'sale_mode' => 'marketplace',
         ];
     }
 }

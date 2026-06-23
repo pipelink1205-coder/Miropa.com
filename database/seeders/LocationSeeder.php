@@ -11,7 +11,7 @@ class LocationSeeder extends Seeder
     {
         $locations = [
             ['name' => 'Bogotá', 'city' => 'Bogotá', 'state' => 'Cundinamarca', 'country' => 'CO', 'latitude' => 4.7110, 'longitude' => -74.0721],
-            ['name' => 'Medell��n', 'city' => 'Medellín', 'state' => 'Antioquia', 'country' => 'CO', 'latitude' => 6.2442, 'longitude' => -75.5812],
+            ['name' => 'Medellín', 'city' => 'Medellín', 'state' => 'Antioquia', 'country' => 'CO', 'latitude' => 6.2442, 'longitude' => -75.5812],
             ['name' => 'Cali', 'city' => 'Cali', 'state' => 'Valle del Cauca', 'country' => 'CO', 'latitude' => 3.4516, 'longitude' => -76.5320],
             ['name' => 'Barranquilla', 'city' => 'Barranquilla', 'state' => 'Atlántico', 'country' => 'CO', 'latitude' => 10.9685, 'longitude' => -74.7813],
             ['name' => 'Cartagena', 'city' => 'Cartagena', 'state' => 'Bolívar', 'country' => 'CO', 'latitude' => 10.3910, 'longitude' => -75.4794],

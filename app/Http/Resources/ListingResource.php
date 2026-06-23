@@ -39,6 +39,7 @@ class ListingResource extends JsonResource
                 'id' => $this->category->id,
                 'name' => $this->category->name,
                 'slug' => $this->category->slug,
+                'sale_mode' => $this->category->sale_mode ?? 'marketplace',
             ]),
             'condition' => $this->whenLoaded('condition', fn () => [
                 'id' => $this->condition->id,

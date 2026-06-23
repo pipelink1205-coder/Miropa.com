@@ -12,10 +12,15 @@ use Filament\Tables\Table;
 class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+
     protected static ?string $navigationLabel = 'Transacciones';
+
     protected static ?string $modelLabel = 'Transacción';
+
     protected static ?string $pluralModelLabel = 'Transacciones';
+
     protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
@@ -47,30 +52,30 @@ class TransactionResource extends Resource
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Estado')
                     ->colors([
-                        'gray'    => 'pending',
-                        'info'    => 'paid',
+                        'gray' => 'pending',
+                        'info' => 'paid',
                         'warning' => 'shipped',
                         'primary' => 'delivered',
                         'success' => 'completed',
-                        'danger'  => fn ($state) => in_array($state, ['cancelled', 'disputed']),
+                        'danger' => fn ($state) => in_array($state, ['cancelled', 'disputed']),
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'pending'   => 'Pendiente',
-                        'paid'      => 'Pagado',
-                        'shipped'   => 'Enviado',
+                        'pending' => 'Pendiente',
+                        'paid' => 'Pagado',
+                        'shipped' => 'Enviado',
                         'delivered' => 'Entregado',
                         'completed' => 'Completado',
                         'cancelled' => 'Cancelado',
-                        'disputed'  => 'En disputa',
-                        default     => $state,
+                        'disputed' => 'En disputa',
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Método de pago')
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'cash'     => 'Efectivo',
+                        'cash' => 'Efectivo',
                         'transfer' => 'Transferencia',
-                        'card'     => 'Tarjeta',
-                        default    => $state,
+                        'card' => 'Tarjeta',
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Fecha')
@@ -81,9 +86,9 @@ class TransactionResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Estado')
                     ->options([
-                        'pending'   => 'Pendiente',
-                        'paid'      => 'Pagado',
-                        'shipped'   => 'Enviado',
+                        'pending' => 'Pendiente',
+                        'paid' => 'Pagado',
+                        'shipped' => 'Enviado',
                         'delivered' => 'Entregado',
                         'completed' => 'Completado',
                         'cancelled' => 'Cancelado',

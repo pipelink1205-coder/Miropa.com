@@ -25,15 +25,38 @@
             <div class="bg-white rounded-2xl border border-gray-100 p-6">
                 <!-- Paso 1: Categoría -->
                 <div v-if="step === 1">
-                    <h2 class="font-bold text-gray-800 mb-4">¿Qué estás vendiendo?</h2>
+                    <h2 class="font-bold text-gray-800 mb-1">¿Qué estás vendiendo?</h2>
+                    <p class="text-sm text-gray-500 mb-4">Moda con compra protegida Mi Ropa, u otras categorías solo para contacto.</p>
+
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         <button
-                            v-for="cat in categories"
+                            v-for="cat in fashionCats"
                             :key="cat.id"
                             @click="selectCategory(cat)"
                             type="button"
                             class="flex flex-col items-center gap-1 p-4 border-2 rounded-xl hover:border-indigo-400 transition"
                             :class="selectedParent?.id === cat.id ? 'border-indigo-500 bg-indigo-50' : 'border-gray-100'"
+                        >
+                            <span class="text-xs font-medium text-center">{{ cat.name }}</span>
+                        </button>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="mt-6 text-sm font-medium text-gray-500 hover:text-indigo-600"
+                        @click="showOtherCategories = !showOtherCategories"
+                    >
+                        {{ showOtherCategories ? '▲ Ocultar otras categorías' : '▼ Otras categorías (solo contacto)' }}
+                    </button>
+
+                    <div v-if="showOtherCategories" class="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <button
+                            v-for="cat in otherCats"
+                            :key="cat.id"
+                            @click="selectCategory(cat)"
+                            type="button"
+                            class="flex flex-col items-center gap-1 p-4 border-2 rounded-xl border-dashed hover:border-amber-400 transition"
+                            :class="selectedParent?.id === cat.id ? 'border-amber-500 bg-amber-50' : 'border-gray-200'"
                         >
                             <span class="text-xs font-medium text-center">{{ cat.name }}</span>
                         </button>
@@ -56,6 +79,13 @@
                     </div>
 
                     <p v-if="form.errors.category_id" class="text-red-500 text-xs mt-2">{{ form.errors.category_id }}</p>
+
+                    <p
+                        v-if="selectedSaleMode === 'classified'"
+                        class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                    >
+                        Esta categoría es de <strong>trato directo</strong>: tu anuncio servirá para que te contacten por chat, sin pago dentro de la app.
+                    </p>
                 </div>
 
                 <!-- Paso 2: Datos del artículo -->
@@ -205,14 +235,33 @@ import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
     listing: Object,
-    categories: Array,
+    fashionCategories: { type: Array, default: () => [] },
+    otherCategories: { type: Array, default: () => [] },
+    categories: { type: Array, default: () => [] },
     conditions: Array,
     locations: Array,
+});
+
+const fashionCats = computed(() => {
+    if (props.fashionCategories.length) {
+        return props.fashionCategories;
+    }
+
+    return props.categories.filter(cat => cat.sale_mode !== 'classified');
+});
+
+const otherCats = computed(() => {
+    if (props.otherCategories.length) {
+        return props.otherCategories;
+    }
+
+    return props.categories.filter(cat => cat.sale_mode === 'classified');
 });
 
 const step = ref(1);
 const steps = ['Categoría', 'Datos', 'Fotos'];
 const selectedParent = ref(null);
+const showOtherCategories = ref(false);
 const previews = ref([]);
 const imageFiles = ref([]);
 const existingImages = ref([...(props.listing.images ?? [])]);
@@ -232,6 +281,23 @@ const form = useForm({
 
 const totalImages = computed(() => existingImages.value.length + imageFiles.value.length);
 
+const selectedSaleMode = computed(() => {
+    if (! form.category_id) {
+        return null;
+    }
+
+    const child = selectedParent.value?.children?.find(c => c.id === form.category_id);
+    if (child) {
+        return child.sale_mode;
+    }
+
+    if (selectedParent.value?.id === form.category_id) {
+        return selectedParent.value.sale_mode;
+    }
+
+    return null;
+});
+
 onMounted(() => {
     initializeCategorySelection();
 });
@@ -242,10 +308,15 @@ function initializeCategorySelection() {
         return;
     }
 
-    for (const parent of props.categories) {
+    const allParents = [...fashionCats.value, ...otherCats.value];
+
+    for (const parent of allParents) {
         if (parent.id === categoryId) {
             selectedParent.value = parent;
             form.category_id = parent.id;
+            if (otherCats.value.some(c => c.id === parent.id)) {
+                showOtherCategories.value = true;
+            }
             return;
         }
 
@@ -253,6 +324,9 @@ function initializeCategorySelection() {
         if (child) {
             selectedParent.value = parent;
             form.category_id = child.id;
+            if (otherCats.value.some(c => c.id === parent.id)) {
+                showOtherCategories.value = true;
+            }
             return;
         }
     }
@@ -264,6 +338,9 @@ function selectCategory(cat) {
         form.category_id = cat.id;
     } else if (!cat.children.some((child) => child.id === form.category_id)) {
         form.category_id = null;
+    }
+    if (otherCats.value.some(c => c.id === cat.id)) {
+        showOtherCategories.value = true;
     }
 }
 

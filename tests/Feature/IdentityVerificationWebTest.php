@@ -33,7 +33,8 @@ class IdentityVerificationWebTest extends TestCase
         IdentityVerification::create([
             'user_id' => $user->id,
             'document_type' => 'cedula',
-            'document_path' => 'identity-docs/test.jpg',
+            'document_path' => 'identity-docs/front.jpg',
+            'document_back_path' => 'identity-docs/back.jpg',
             'status' => 'approved',
         ]);
 
@@ -51,16 +52,37 @@ class IdentityVerificationWebTest extends TestCase
         $this->actingAs($user)
             ->post('/cuenta/verificar-identidad', [
                 'document_type' => 'cedula',
-                'document' => UploadedFile::fake()->image('cedula.jpg'),
+                'document_front' => UploadedFile::fake()->image('cedula-frente.jpg'),
+                'document_back' => UploadedFile::fake()->image('cedula-reverso.jpg'),
             ])
             ->assertRedirect(route('account.index'))
             ->assertSessionHas('success');
 
-        $this->assertDatabaseHas('identity_verifications', [
-            'user_id' => $user->id,
-            'document_type' => 'cedula',
-            'status' => 'pending',
-        ]);
+        $verification = IdentityVerification::where('user_id', $user->id)->first();
+
+        $this->assertNotNull($verification);
+        $this->assertSame('cedula', $verification->document_type);
+        $this->assertSame('pending', $verification->status);
+        $this->assertNotNull($verification->document_path);
+        $this->assertNotNull($verification->document_back_path);
+        Storage::disk('local')->assertExists($verification->document_path);
+        Storage::disk('local')->assertExists($verification->document_back_path);
+    }
+
+    public function test_user_cannot_submit_without_both_sides(): void
+    {
+        Storage::fake('local');
+
+        $user = User::factory()->create(['email_verified_at' => now()]);
+
+        $this->actingAs($user)
+            ->from('/cuenta/verificar-identidad')
+            ->post('/cuenta/verificar-identidad', [
+                'document_type' => 'cedula',
+                'document_front' => UploadedFile::fake()->image('cedula-frente.jpg'),
+            ])
+            ->assertRedirect('/cuenta/verificar-identidad')
+            ->assertSessionHasErrors('document_back');
     }
 
     public function test_user_cannot_submit_duplicate_identity_via_web(): void
@@ -72,7 +94,7 @@ class IdentityVerificationWebTest extends TestCase
         IdentityVerification::create([
             'user_id' => $user->id,
             'document_type' => 'cedula',
-            'document_path' => 'identity-docs/test.jpg',
+            'document_path' => 'identity-docs/front.jpg',
             'status' => 'pending',
         ]);
 
@@ -80,9 +102,10 @@ class IdentityVerificationWebTest extends TestCase
             ->from('/cuenta/verificar-identidad')
             ->post('/cuenta/verificar-identidad', [
                 'document_type' => 'cedula',
-                'document' => UploadedFile::fake()->image('cedula2.jpg'),
+                'document_front' => UploadedFile::fake()->image('cedula-frente.jpg'),
+                'document_back' => UploadedFile::fake()->image('cedula-reverso.jpg'),
             ])
             ->assertRedirect('/cuenta/verificar-identidad')
-            ->assertSessionHasErrors('document');
+            ->assertSessionHasErrors('document_front');
     }
 }

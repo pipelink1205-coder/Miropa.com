@@ -2,7 +2,9 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\IdentityVerification;
 use App\Models\Listing;
+use App\Models\Report;
 use App\Models\Transaction;
 use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -32,17 +34,17 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-o-check-circle')
                 ->color('info'),
 
-            Stat::make('Ingresos del mes', 'COP ' . number_format($ingresosMes, 0, ',', '.'))
+            Stat::make('Ingresos del mes', 'COP '.number_format($ingresosMes, 0, ',', '.'))
                 ->description('Comisiones cobradas este mes')
                 ->descriptionIcon('heroicon-o-banknotes')
                 ->color('warning'),
 
-            Stat::make('Reportes pendientes', \App\Models\Report::where('status', 'open')->count())
+            Stat::make('Reportes pendientes', Report::where('status', 'open')->count())
                 ->description('Requieren revisión')
                 ->descriptionIcon('heroicon-o-flag')
                 ->color('danger'),
 
-            Stat::make('Verificaciones pendientes', \App\Models\IdentityVerification::where('status', 'pending')->count())
+            Stat::make('Verificaciones pendientes', IdentityVerification::where('status', 'pending')->count())
                 ->description('Documentos por revisar')
                 ->descriptionIcon('heroicon-o-identification')
                 ->color('warning'),

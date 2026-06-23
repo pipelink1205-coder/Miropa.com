@@ -26,6 +26,13 @@
                 Destacado
             </span>
 
+            <SaleModeBadge
+                v-if="saleMode && listing.status === 'active' && !featured"
+                :sale-mode="saleMode"
+                compact
+                class="absolute left-3 top-3"
+            />
+
             <span
                 v-if="listing.status !== 'active'"
                 class="absolute left-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide"
@@ -67,6 +74,7 @@
 </template>
 
 <script setup>
+import SaleModeBadge from '@/Components/SaleModeBadge.vue';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -74,8 +82,6 @@ const props = defineProps({
     listing: { type: Object, required: true },
     featured: { type: Boolean, default: false },
 });
-
-defineEmits(['toggleFavorite']);
 
 const imageUrl = computed(() => {
     if (typeof props.listing.primary_image === 'string') {
@@ -86,6 +92,12 @@ const imageUrl = computed(() => {
         ?? props.listing.images?.[0]?.url
         ?? null;
 });
+
+const saleMode = computed(
+    () => props.listing.category?.sale_mode ?? 'marketplace',
+);
+
+defineEmits(['toggleFavorite']);
 
 const publishedLabel = computed(() => {
     const raw = props.listing.published_at;

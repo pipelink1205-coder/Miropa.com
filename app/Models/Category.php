@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,19 @@ class Category extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['parent_id', 'name', 'slug', 'icon', 'description', 'position', 'is_active'];
+    protected $fillable = [
+        'parent_id',
+        'name',
+        'slug',
+        'level',
+        'vertical',
+        'icon',
+        'image',
+        'description',
+        'position',
+        'is_active',
+        'sale_mode',
+    ];
 
     protected static function booted(): void
     {
@@ -24,6 +37,7 @@ class Category extends Model
     {
         return [
             'is_active' => 'boolean',
+            'sale_mode' => 'string',
         ];
     }
 
@@ -40,5 +54,29 @@ class Category extends Model
     public function listings(): HasMany
     {
         return $this->hasMany(Listing::class);
+    }
+
+    public function scopeModa(Builder $query): Builder
+    {
+        return $query->where('vertical', 'moda');
+    }
+
+    public function scopeGeneral(Builder $query): Builder
+    {
+        return $query->where('vertical', 'general');
+    }
+
+    public function scopeDepartamentos(Builder $query): Builder
+    {
+        return $query->where('level', 'departamento');
+    }
+
+    public function isLeaf(): bool
+    {
+        if ($this->relationLoaded('children')) {
+            return $this->children->isEmpty();
+        }
+
+        return ! $this->children()->exists();
     }
 }

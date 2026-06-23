@@ -13,10 +13,15 @@ use Filament\Tables\Table;
 class ListingResource extends Resource
 {
     protected static ?string $model = Listing::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-tag';
+
     protected static ?string $navigationLabel = 'Anuncios';
+
     protected static ?string $modelLabel = 'Anuncio';
+
     protected static ?string $pluralModelLabel = 'Anuncios';
+
     protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
@@ -27,12 +32,12 @@ class ListingResource extends Resource
                 Forms\Components\Select::make('status')
                     ->label('Estado')
                     ->options([
-                        'draft'    => 'Borrador',
-                        'active'   => 'Activo',
+                        'draft' => 'Borrador',
+                        'active' => 'Activo',
                         'reserved' => 'Reservado',
-                        'sold'     => 'Vendido',
-                        'paused'   => 'Pausado',
-                        'deleted'  => 'Eliminado',
+                        'sold' => 'Vendido',
+                        'paused' => 'Pausado',
+                        'deleted' => 'Eliminado',
                     ])
                     ->required(),
                 Forms\Components\Textarea::make('description')->label('Descripción')->columnSpanFull(),
@@ -61,17 +66,17 @@ class ListingResource extends Resource
                     ->colors([
                         'success' => 'active',
                         'warning' => 'reserved',
-                        'gray'    => 'draft',
-                        'danger'  => fn ($state) => in_array($state, ['deleted', 'sold']),
+                        'gray' => 'draft',
+                        'danger' => fn ($state) => in_array($state, ['deleted', 'sold']),
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'draft'    => 'Borrador',
-                        'active'   => 'Activo',
+                        'draft' => 'Borrador',
+                        'active' => 'Activo',
                         'reserved' => 'Reservado',
-                        'sold'     => 'Vendido',
-                        'paused'   => 'Pausado',
-                        'deleted'  => 'Eliminado',
-                        default    => $state,
+                        'sold' => 'Vendido',
+                        'paused' => 'Pausado',
+                        'deleted' => 'Eliminado',
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('views_count')
                     ->label('Vistas')
@@ -85,11 +90,11 @@ class ListingResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Estado')
                     ->options([
-                        'active'   => 'Activo',
+                        'active' => 'Activo',
                         'reserved' => 'Reservado',
-                        'sold'     => 'Vendido',
-                        'draft'    => 'Borrador',
-                        'paused'   => 'Pausado',
+                        'sold' => 'Vendido',
+                        'draft' => 'Borrador',
+                        'paused' => 'Pausado',
                     ]),
             ])
             ->actions([
@@ -108,7 +113,7 @@ class ListingResource extends Resource
     {
         return [
             'index' => Pages\ListListings::route('/'),
-            'edit'  => Pages\EditListing::route('/{record}/edit'),
+            'edit' => Pages\EditListing::route('/{record}/edit'),
         ];
     }
 

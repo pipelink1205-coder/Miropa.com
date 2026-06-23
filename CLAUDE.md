@@ -119,3 +119,38 @@ php artisan reverb:start
 - Entorno local: Laragon con MySQL 8, `marketplace.test`. Base de datos creada como `marketplace` (utf8mb4).
 - Frontend: Vue 3 + Inertia.js v3 + Tailwind CSS v4 + Vite. Entry point en `resources/js/app.js`, blade raíz en `resources/views/app.blade.php`.
 - Rutas API bajo `/api/v1` (esqueleto listo en `routes/api.php`). Sanctum configurado con dominio stateful `marketplace.test`.
+
+### Marca y enfoque de negocio (Mi Ropa)
+
+- **Marca:** moda de segunda mano (ropa, calzado, accesorios, deporte, ropa bebé). Dominio: miropa.com.
+- **Una cuenta, una reputación** por usuario — no subcuentas por tipo de producto.
+- **`sale_mode` en categorías** (`categories.sale_mode`):
+  - `marketplace` — núcleo moda; compra con pasarela Mi Ropa (futuro) + chat + envío integrado (futuro).
+  - `classified` — vehículos, hogar voluminoso, herramientas, arte; **solo chat**, trato y entrega fuera de la app.
+- **UI:** badge “Compra protegida Mi Ropa” vs “Solo contacto”; home y publicar priorizan categorías moda (`config/marketplace.php` → slugs de `CategoryDefinitions::fashionSlugs()`).
+- **Árbol moda (6 padres, `marketplace`):** Mujer, Hombre, Niños y Bebé, Calzado, Accesorios, Ropa deportiva — subcategorías granulares (tenis, gorras, vestidos, etc.). Definición única en `App\Support\CategoryDefinitions`.
+- **Tiles home:** `config/category_images.php` con flag `primary` (moda arriba, resto en sección “Otros anuncios”).
+
+### Roadmap pagos y envíos (no implementado aún)
+
+**Fase A — Pasarela básica (moda, `marketplace` only)**
+
+- Integrar pasarela (candidata: Mercado Pago por mercado colombiano — confirmar antes de instalar).
+- Checkout: precio artículo + comisión Mi Ropa opcional.
+- Retención de fondos hasta confirmación de entrega o ventana de disputa.
+- Sin envío automático: comprador y vendedor acuerdan entrega por chat, o tarifa fija manual en checkout.
+
+**Fase B — Envío integrado**
+
+- Cotización al pagar: producto + **envío (lo paga el comprador**, salvo promos “envío gratis”).
+- Integración transportadora (Servientrega, Coordinadora, 99minutos, etc.) o tarifas fijas por ciudad.
+- Vendedor: etiqueta prepagada / punto de recogida; tracking visible en la app.
+- La **pasarela no envía paquetes** — solo cobra; Mi Ropa orquesta con el operador logístico.
+
+**Fase C — Opciones locales**
+
+- “Entrega en persona” (misma ciudad): sin costo de envío en app; pago retenido hasta confirmación.
+- `classified` **nunca** entra en pasarela ni envío Mi Ropa.
+
+**Modelo de ingresos (referencia):** comisión sobre venta marketplace + margen opcional en envío negociado con transportadora.
+

@@ -10,10 +10,8 @@
                 </Link>
 
                 <h1 class="text-section-title">Verificar identidad</h1>
-                <p class="mt-2 text-ink-secondary">
-                    Sube una foto clara de tu documento. Un administrador lo revisará y, si es aprobado, verás el badge
-                    <strong class="text-ink">✓ Identidad</strong> en tu perfil.
-                </p>
+
+                <IdentityVerificationNotice class="mt-6" />
 
                 <div
                     v-if="$page.props.flash?.success"
@@ -47,53 +45,33 @@
                         </p>
                     </div>
 
-                    <div>
-                        <label for="document" class="mb-2 block text-sm font-semibold text-ink">
-                            Archivo del documento
-                        </label>
-                        <div
-                            class="rounded-2xl border-2 border-dashed border-zinc-200 bg-surface-muted/50 p-6 text-center transition"
-                            :class="previewUrl ? 'border-accent/40 bg-accent-soft/30' : 'hover:border-zinc-300'"
-                        >
-                            <input
-                                id="document"
-                                type="file"
-                                accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
-                                class="sr-only"
-                                @change="onFileChange"
-                            />
-                            <label for="document" class="cursor-pointer">
-                                <svg class="mx-auto h-10 w-10 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                                </svg>
-                                <p class="mt-3 text-sm font-medium text-ink">
-                                    {{ fileLabel }}
-                                </p>
-                                <p class="mt-1 text-xs text-ink-muted">JPG, PNG o PDF · máximo 5 MB</p>
-                            </label>
+                    <DocumentSideUpload
+                        id="document_front"
+                        v-model="form.document_front"
+                        :label="sideLabels.front.title"
+                        :hint="sideLabels.front.hint"
+                        :error="form.errors.document_front"
+                    />
 
-                            <img
-                                v-if="previewUrl"
-                                :src="previewUrl"
-                                alt="Vista previa del documento"
-                                class="mx-auto mt-4 max-h-48 rounded-xl border border-zinc-200 object-contain"
-                            />
-                        </div>
-                        <p v-if="form.errors.document" class="mt-1 text-xs text-red-600">
-                            {{ form.errors.document }}
-                        </p>
-                    </div>
+                    <DocumentSideUpload
+                        id="document_back"
+                        v-model="form.document_back"
+                        :label="sideLabels.back.title"
+                        :hint="sideLabels.back.hint"
+                        :error="form.errors.document_back"
+                    />
 
                     <ul class="space-y-2 rounded-xl bg-surface-muted px-4 py-3 text-xs text-ink-secondary">
-                        <li>• La imagen debe ser legible (sin reflejos ni cortes).</li>
-                        <li>• Solo usamos el documento para verificar tu identidad.</li>
+                        <li>• Sube una foto por cada cara; deben verse datos y bordes completos.</li>
+                        <li>• Evita reflejos, sombras y recortes.</li>
+                        <li>• JPG, PNG o PDF · máximo 5 MB por archivo.</li>
                         <li>• La revisión puede tardar hasta 48 horas hábiles.</li>
                     </ul>
 
                     <button
                         type="submit"
                         class="btn-primary w-full"
-                        :disabled="form.processing || ! form.document"
+                        :disabled="form.processing || ! canSubmit"
                     >
                         {{ form.processing ? 'Enviando...' : 'Enviar documento' }}
                     </button>
@@ -104,38 +82,47 @@
 </template>
 
 <script setup>
+import DocumentSideUpload from '@/Components/DocumentSideUpload.vue';
+import IdentityVerificationNotice from '@/Components/IdentityVerificationNotice.vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, useForm } from '@inertiajs/vue3';
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const form = useForm({
     document_type: 'cedula',
-    document: null,
+    document_front: null,
+    document_back: null,
 });
 
-const previewUrl = ref(null);
-
-const fileLabel = computed(() => {
-    if (form.document instanceof File) {
-        return form.document.name;
+const sideLabels = computed(() => {
+    if (form.document_type === 'passport') {
+        return {
+            front: {
+                title: 'Página principal (foto y datos)',
+                hint: 'La página donde aparece tu foto y nombre.',
+            },
+            back: {
+                title: 'Reverso o segunda página',
+                hint: 'La otra página visible del pasaporte.',
+            },
+        };
     }
 
-    return 'Haz clic para seleccionar archivo';
+    return {
+        front: {
+            title: 'Frente del documento',
+            hint: 'La cara con tu foto y número de documento.',
+        },
+        back: {
+            title: 'Reverso del documento',
+            hint: 'La cara opuesta con huella, código o datos adicionales.',
+        },
+    };
 });
 
-function onFileChange(event) {
-    const file = event.target.files?.[0] ?? null;
-    form.document = file;
-
-    if (previewUrl.value) {
-        URL.revokeObjectURL(previewUrl.value);
-        previewUrl.value = null;
-    }
-
-    if (file && file.type.startsWith('image/')) {
-        previewUrl.value = URL.createObjectURL(file);
-    }
-}
+const canSubmit = computed(() =>
+    form.document_front instanceof File && form.document_back instanceof File,
+);
 
 function submit() {
     form.post(route('identity.verify.store'), {

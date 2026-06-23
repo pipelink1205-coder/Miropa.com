@@ -14,6 +14,7 @@ class IdentityVerification extends Model
         'user_id',
         'document_type',
         'document_path',
+        'document_back_path',
         'status',
         'reviewed_by',
         'reviewed_at',

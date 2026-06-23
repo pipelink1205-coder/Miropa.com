@@ -38,15 +38,15 @@
                         <p class="text-gray-600 text-sm whitespace-pre-line">{{ listing.description }}</p>
                     </div>
 
-                    <!-- Atributos -->
-                    <div v-if="listing.attributes && Object.keys(listing.attributes).length" class="bg-white rounded-2xl border border-gray-100 p-6">
-                        <h2 class="font-bold text-gray-800 mb-3">Características</h2>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div v-for="(value, key) in listing.attributes" :key="key" class="text-sm">
-                                <span class="text-gray-500">{{ key }}</span>
-                                <span class="block font-medium text-gray-800">{{ value }}</span>
+                    <!-- Características / detalles Moda -->
+                    <div v-if="listing.detail_rows?.length" class="rounded-2xl border border-zinc-200 bg-surface-raised p-6">
+                        <h2 class="mb-3 font-bold text-ink">Características</h2>
+                        <dl class="grid grid-cols-2 gap-x-4 gap-y-3">
+                            <div v-for="row in listing.detail_rows" :key="row.label" class="text-sm">
+                                <dt class="text-ink-secondary">{{ row.label }}</dt>
+                                <dd class="mt-0.5 font-medium text-ink">{{ row.value }}</dd>
                             </div>
-                        </div>
+                        </dl>
                     </div>
                 </div>
 
@@ -67,13 +67,35 @@
                             </div>
                         </div>
 
-                        <div class="flex gap-2 mb-4">
-                            <span class="text-xs px-2 py-1 rounded-full font-medium bg-gray-100 text-gray-600">
+                        <div class="flex flex-wrap items-center gap-2 mb-4">
+                            <SaleModeBadge :sale-mode="listing.category?.sale_mode ?? 'marketplace'" />
+                            <span class="rounded-full bg-surface-muted px-2 py-1 text-xs font-medium text-ink-secondary">
                                 {{ listing.condition?.name }}
                             </span>
-                            <span class="text-xs px-2 py-1 rounded-full font-medium bg-indigo-50 text-indigo-600">
+                            <span class="rounded-full bg-accent-soft px-2 py-1 text-xs font-medium text-accent">
                                 {{ listing.category?.name }}
                             </span>
+                            <span v-if="listing.size" class="rounded-full bg-surface-muted px-2 py-1 text-xs font-medium text-ink">
+                                Talla {{ listing.size }}
+                            </span>
+                            <span v-if="listing.color" class="rounded-full bg-surface-muted px-2 py-1 text-xs font-medium text-ink">
+                                {{ listing.color }}
+                            </span>
+                        </div>
+
+                        <p
+                            v-if="listing.second_life_impact?.label"
+                            class="mb-4 rounded-xl border border-trust/20 bg-trust/5 px-4 py-3 text-sm text-trust"
+                        >
+                            ♻ {{ listing.second_life_impact.label }}
+                        </p>
+
+                        <div
+                            v-if="isClassified"
+                            class="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                            role="status"
+                        >
+                            <strong class="font-semibold">Trato directo</strong> — esta venta se coordina por fuera de la app. Usa el chat para acordar detalles con el vendedor.
                         </div>
 
                         <div v-if="$page.props.flash?.error" class="mb-4 text-sm text-red-700 bg-red-50 border border-red-100 rounded-lg px-4 py-3">
@@ -107,6 +129,15 @@
                                 </Link>
                             </template>
                             <template v-else>
+                                <button
+                                    v-if="contact?.can_purchase"
+                                    type="button"
+                                    disabled
+                                    class="w-full bg-indigo-100 text-indigo-400 py-3 rounded-xl font-semibold mb-2 cursor-not-allowed"
+                                    title="Compra con protección Mi Ropa — disponible pronto"
+                                >
+                                    Comprar con Mi Ropa
+                                </button>
                                 <Link
                                     v-if="contact?.conversation_id"
                                     :href="`/mensajes/${contact.conversation_id}`"
@@ -209,15 +240,20 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ListingCard from '@/Components/ListingCard.vue';
+import SaleModeBadge from '@/Components/SaleModeBadge.vue';
 import SellerTrust from '@/Components/SellerTrust.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     listing:         Object,
     relatedListings: Array,
     contact:         Object,
 });
+
+const isClassified = computed(
+    () => props.listing.category?.sale_mode === 'classified',
+);
 
 const showContactModal = ref(false);
 

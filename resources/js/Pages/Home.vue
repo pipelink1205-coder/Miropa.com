@@ -1,88 +1,137 @@
 <template>
     <AppLayout title="Inicio">
-        <!-- Hero -->
+        <!-- Hero compacto — visible above the fold on 14" laptops -->
         <section class="relative overflow-hidden bg-ink text-white">
             <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(194,65,12,0.25),_transparent_50%)]" aria-hidden="true" />
             <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_rgba(13,148,136,0.15),_transparent_50%)]" aria-hidden="true" />
 
-            <div class="container-app relative py-20 md:py-28 lg:py-32">
-                <div class="mx-auto max-w-3xl text-center">
-                    <p class="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-sm font-medium text-zinc-300 backdrop-blur-sm">
-                        <span class="h-2 w-2 rounded-full bg-trust" aria-hidden="true" />
-                        Marketplace de moda de segunda mano
-                    </p>
+            <div class="container-app relative py-8 md:py-10 lg:py-11">
+                <div class="home-hero">
+                    <div class="home-hero__intro">
+                        <p class="mb-2 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-300 backdrop-blur-sm sm:text-sm">
+                            ✨ Moda con historia
+                        </p>
 
-                    <h1 class="text-display text-white">
-                        Tu ropa, nueva vida
-                    </h1>
+                        <h1 class="home-hero__title">
+                            Tu ropa, nueva vida
+                        </h1>
 
-                    <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-zinc-300 md:text-xl">
-                        Compra y vende en {{ brand.domain }} con vendedores verificados, chat directo y una experiencia pensada para ti.
-                    </p>
+                        <p class="home-hero__subtitle">
+                            Compra y vende ropa, calzado y accesorios con vendedores verificados y chat directo.
+                        </p>
+                    </div>
 
-                    <form
-                        action="/anuncios"
-                        method="get"
-                        class="mx-auto mt-10 flex max-w-xl flex-col gap-3 sm:flex-row"
-                        role="search"
-                        aria-label="Buscar anuncios"
-                    >
-                        <label for="hero-search" class="sr-only">¿Qué estás buscando?</label>
-                        <input
-                            id="hero-search"
-                            type="search"
-                            name="q"
-                            placeholder="Busca ropa, zapatos, accesorios..."
-                            class="input-search flex-1 border-white/10 bg-white/95 text-ink shadow-lg backdrop-blur-sm"
-                        />
-                        <button type="submit" class="btn-primary shrink-0 px-8">
-                            Buscar
-                        </button>
-                    </form>
+                    <div class="home-hero__actions">
+                        <form
+                            action="/anuncios"
+                            method="get"
+                            class="flex flex-col gap-2.5 sm:flex-row"
+                            role="search"
+                            aria-label="Buscar anuncios"
+                        >
+                            <label for="hero-search" class="sr-only">¿Qué estás buscando?</label>
+                            <input
+                                id="hero-search"
+                                type="search"
+                                name="q"
+                                placeholder="Busca ropa, zapatos, accesorios..."
+                                class="input-search flex-1 border-white/10 bg-white/95 py-2.5 text-ink shadow-lg backdrop-blur-sm"
+                            />
+                            <button type="submit" class="btn-primary shrink-0 px-6 py-2.5">
+                                Buscar
+                            </button>
+                        </form>
 
-                    <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-                        <Link href="/anuncios" class="btn-secondary border-white/20 bg-white/10 text-white hover:bg-white/20">
-                            Explorar anuncios
-                        </Link>
-                        <Link href="/listings/create" class="text-sm font-semibold text-zinc-300 underline-offset-4 transition hover:text-white hover:underline">
-                            Vender ahora →
+                        <div class="flex flex-wrap items-center gap-3">
+                            <Link href="/anuncios" class="btn-secondary border-white/20 bg-white/10 px-5 py-2.5 text-white hover:bg-white/20">
+                                Explorar anuncios
+                            </Link>
+                            <Link href="/listings/create" class="text-sm font-semibold text-zinc-300 underline-offset-4 transition hover:text-white hover:underline">
+                                Vender ahora →
+                            </Link>
+                        </div>
+
+                        <dl class="home-hero__stats">
+                            <div class="home-hero__stat">
+                                <dt class="text-xs font-medium text-zinc-400">Anuncios activos</dt>
+                                <dd class="mt-0.5 text-xl font-bold tabular-nums sm:text-2xl">{{ stats.active_listings }}</dd>
+                            </div>
+                            <div class="home-hero__stat">
+                                <dt class="text-xs font-medium text-zinc-400">Categorías</dt>
+                                <dd class="mt-0.5 text-xl font-bold tabular-nums sm:text-2xl">{{ stats.categories }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Moda — experiencia visual -->
+        <section id="moda" class="home-section bg-surface" aria-labelledby="categories-heading">
+            <div class="container-app">
+                <SectionHeader
+                    heading-id="categories-heading"
+                    eyebrow="Segunda mano"
+                    title="Moda"
+                    subtitle="Ropa, calzado y accesorios de gente real — encuentra lo tuyo sin complicarte."
+                    href="/anuncios"
+                    link-label="Ver toda la moda"
+                    class="mb-6 md:mb-8"
+                />
+                <div class="visual-category-grid visual-category-grid--fashion">
+                    <VisualCategoryCard
+                        v-for="category in fashionCategories"
+                        :key="category.department"
+                        :title="category.title"
+                        :subtitle="category.subtitle"
+                        :image="category.image"
+                        :href="category.url"
+                    />
+                </div>
+
+                <!-- Universos (eje transversal) -->
+                <div v-if="fashionUniverses.length" class="mt-8 md:mt-10">
+                    <h3 class="text-sm font-semibold uppercase tracking-wider text-accent">Universos</h3>
+                    <p class="mt-1 text-sm text-ink-secondary">Descubre por intención, no solo por categoría.</p>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <Link
+                            v-for="universe in fashionUniverses"
+                            :key="universe.slug"
+                            :href="`/moda/universos/${universe.slug}`"
+                            class="rounded-full border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5 hover:shadow-md"
+                            :style="{ borderColor: universe.accent_color + '40', color: universe.accent_color }"
+                        >
+                            {{ universe.name }}
                         </Link>
                     </div>
                 </div>
-
-                <!-- Stats -->
-                <dl class="mx-auto mt-16 grid max-w-2xl grid-cols-2 gap-6 md:grid-cols-2 md:gap-8">
-                    <div class="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-center backdrop-blur-sm">
-                        <dt class="text-sm font-medium text-zinc-400">Anuncios activos</dt>
-                        <dd class="mt-1 text-3xl font-bold tabular-nums">{{ stats.active_listings }}</dd>
-                    </div>
-                    <div class="rounded-2xl border border-white/10 bg-white/5 px-6 py-5 text-center backdrop-blur-sm">
-                        <dt class="text-sm font-medium text-zinc-400">Categorías</dt>
-                        <dd class="mt-1 text-3xl font-bold tabular-nums">{{ stats.categories }}</dd>
-                    </div>
-                </dl>
             </div>
         </section>
 
         <TrustBar />
 
-        <!-- Categorías -->
-        <section class="section-padding bg-surface" aria-labelledby="categories-heading">
+        <!-- Otras categorías del marketplace -->
+        <section
+            v-if="otherCategories.length"
+            class="home-section border-t border-zinc-100 bg-surface-muted/50"
+            aria-labelledby="other-categories-heading"
+        >
             <div class="container-app">
                 <SectionHeader
-                    heading-id="categories-heading"
-                    eyebrow="Descubre"
-                    title="Explorar por categoría"
-                    subtitle="Encuentra lo que buscas navegando por nuestras categorías más populares."
+                    heading-id="other-categories-heading"
+                    eyebrow="Marketplace"
+                    title="Otras categorías"
+                    subtitle="Electrónica, hogar, vehículos y más — solo contacto por chat."
                     href="/anuncios"
-                    link-label="Ver todas"
-                    class="mb-10 md:mb-14"
+                    link-label="Ver todos"
+                    class="mb-6 md:mb-8"
                 />
-                <div class="category-grid">
-                    <CategoryCard
-                        v-for="category in categories"
-                        :key="category.name"
-                        :name="category.name"
+                <div class="visual-category-grid visual-category-grid--marketplace">
+                    <VisualCategoryCard
+                        v-for="category in otherCategories"
+                        :key="category.search_category"
+                        :title="category.title"
+                        :subtitle="category.subtitle"
                         :image="category.image"
                         :href="category.url"
                     />
@@ -122,7 +171,7 @@
                 <SectionHeader
                     eyebrow="Novedades"
                     title="Publicaciones recientes"
-                    subtitle="Lo último que acaban de publicar nuestros vendedores."
+                    subtitle="Prendas y accesorios recién publicados por nuestra comunidad."
                     href="/anuncios"
                     link-label="Ver más"
                     class="mb-10 md:mb-14"
@@ -201,16 +250,18 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import CategoryCard from '@/Components/CategoryCard.vue';
 import ListingCard from '@/Components/ListingCard.vue';
 import SectionHeader from '@/Components/SectionHeader.vue';
 import SellerCard from '@/Components/SellerCard.vue';
 import TrustBar from '@/Components/TrustBar.vue';
+import VisualCategoryCard from '@/Components/VisualCategoryCard.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 defineProps({
-    categories: { type: Array, default: () => [] },
+    fashionCategories: { type: Array, default: () => [] },
+    otherCategories: { type: Array, default: () => [] },
+    fashionUniverses: { type: Array, default: () => [] },
     recentListings: { type: Array, default: () => [] },
     featuredListings: { type: Array, default: () => [] },
     featuredSellers: { type: Array, default: () => [] },
@@ -224,27 +275,123 @@ const brand = computed(() => usePage().props.brand ?? { domain: 'miropa.com' });
 </script>
 
 <style scoped>
-.category-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1rem;
+.home-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
 }
 
-@media (min-width: 640px) {
-    .category-grid {
-        gap: 1.25rem;
-    }
+.home-hero__intro {
+    text-align: center;
+}
+
+.home-hero__title {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: #fff;
+}
+
+.home-hero__subtitle {
+    margin-top: 0.625rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 32rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: rgb(212 212 216);
+}
+
+.home-hero__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    max-width: 32rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+}
+
+.home-hero__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.625rem;
+}
+
+.home-hero__stat {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.625rem 0.875rem;
+    text-align: center;
+    backdrop-filter: blur(4px);
+    border-radius: 0.75rem;
+}
+
+.home-section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
 @media (min-width: 768px) {
-    .category-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+    .home-section {
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
     }
 }
 
-@media (min-width: 1280px) {
-    .category-grid {
-        grid-template-columns: repeat(6, minmax(0, 1fr));
+@media (min-width: 1024px) {
+    .home-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+        align-items: center;
+        gap: 2rem 3rem;
+    }
+
+    .home-hero__intro {
+        text-align: left;
+    }
+
+    .home-hero__subtitle {
+        margin-left: 0;
+        margin-right: 0;
+        font-size: 1rem;
+    }
+
+    .home-hero__actions {
+        margin-left: 0;
+        margin-right: 0;
+        max-width: none;
+    }
+}
+
+.visual-category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.875rem;
+}
+
+@media (min-width: 640px) {
+    .visual-category-grid {
+        gap: 1rem;
+    }
+
+    .visual-category-grid--fashion {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .visual-category-grid--marketplace {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1024px) {
+    .visual-category-grid--fashion {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .visual-category-grid--marketplace {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 </style>

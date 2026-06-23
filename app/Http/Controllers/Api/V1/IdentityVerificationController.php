@@ -14,7 +14,8 @@ class IdentityVerificationController extends Controller
         $service->submit(
             $request->user(),
             $request->validated('document_type'),
-            $request->file('document'),
+            $request->file('document_front'),
+            $request->file('document_back'),
         );
 
         return response()->json(['message' => 'Documento enviado. Te notificaremos cuando sea revisado.'], 201);

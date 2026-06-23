@@ -12,10 +12,15 @@ use Filament\Tables\Table;
 class ReportResource extends Resource
 {
     protected static ?string $model = Report::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-flag';
+
     protected static ?string $navigationLabel = 'Reportes';
+
     protected static ?string $modelLabel = 'Reporte';
+
     protected static ?string $pluralModelLabel = 'Reportes';
+
     protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
@@ -34,19 +39,19 @@ class ReportResource extends Resource
                     ->label('Tipo')
                     ->formatStateUsing(fn ($state) => match (class_basename($state)) {
                         'Listing' => 'Anuncio',
-                        'User'    => 'Usuario',
+                        'User' => 'Usuario',
                         'Message' => 'Mensaje',
-                        default   => $state,
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('reason')
                     ->label('Motivo')
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'spam'          => 'Spam',
-                        'fraud'         => 'Fraude',
+                        'spam' => 'Spam',
+                        'fraud' => 'Fraude',
                         'inappropriate' => 'Inapropiado',
-                        'prohibited'    => 'Artículo prohibido',
-                        'other'         => 'Otro',
-                        default         => $state,
+                        'prohibited' => 'Artículo prohibido',
+                        'other' => 'Otro',
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Descripción')
@@ -55,16 +60,16 @@ class ReportResource extends Resource
                     ->label('Estado')
                     ->colors([
                         'warning' => 'open',
-                        'info'    => 'reviewing',
+                        'info' => 'reviewing',
                         'success' => 'resolved',
-                        'gray'    => 'dismissed',
+                        'gray' => 'dismissed',
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        'open'      => 'Abierto',
+                        'open' => 'Abierto',
                         'reviewing' => 'En revisión',
-                        'resolved'  => 'Resuelto',
+                        'resolved' => 'Resuelto',
                         'dismissed' => 'Descartado',
-                        default     => $state,
+                        default => $state,
                     }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Fecha')
@@ -75,9 +80,9 @@ class ReportResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Estado')
                     ->options([
-                        'open'      => 'Abierto',
+                        'open' => 'Abierto',
                         'reviewing' => 'En revisión',
-                        'resolved'  => 'Resuelto',
+                        'resolved' => 'Resuelto',
                         'dismissed' => 'Descartado',
                     ]),
             ])
@@ -89,7 +94,7 @@ class ReportResource extends Resource
                     ->requiresConfirmation()
                     ->visible(fn (Report $record) => $record->status === 'open')
                     ->action(fn (Report $record) => $record->update([
-                        'status'      => 'resolved',
+                        'status' => 'resolved',
                         'resolved_by' => auth()->id(),
                     ])),
                 Tables\Actions\Action::make('descartar')
@@ -99,7 +104,7 @@ class ReportResource extends Resource
                     ->requiresConfirmation()
                     ->visible(fn (Report $record) => $record->status === 'open')
                     ->action(fn (Report $record) => $record->update([
-                        'status'      => 'dismissed',
+                        'status' => 'dismissed',
                         'resolved_by' => auth()->id(),
                     ])),
             ])
@@ -116,6 +121,7 @@ class ReportResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         $count = static::getModel()::where('status', 'open')->count();
+
         return $count > 0 ? (string) $count : null;
     }
 

@@ -13,7 +13,9 @@
             <!-- Verificaciones (confianza) -->
             <section class="bg-white rounded-2xl border border-gray-100 p-6 mb-6">
                 <h2 class="text-lg font-bold text-gray-800 mb-1">Verificaciones</h2>
-                <p class="text-xs text-gray-500 mb-5">Confirman que eres una persona real. No suman puntos; desbloquean funciones y muestran badges en tu perfil.</p>
+                <p class="text-xs text-gray-500 mb-5">
+                    El correo y el celular son necesarios para usar la app. El documento de identidad es opcional y refuerza tu perfil con el badge ✓ Identidad.
+                </p>
 
                 <ul class="space-y-4">
                     <li
@@ -36,6 +38,12 @@
                         </Link>
                     </li>
                 </ul>
+
+                <IdentityVerificationNotice
+                    v-if="! trust.identity_verified"
+                    compact
+                    class="mt-5"
+                />
 
                 <div v-if="hasAnyBadge" class="mt-5 pt-5 border-t border-gray-100">
                     <p class="text-xs text-gray-500 mb-2">Así te ven otros usuarios:</p>
@@ -85,6 +93,7 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
+import IdentityVerificationNotice from '@/Components/IdentityVerificationNotice.vue';
 import RatingStars from '@/Components/RatingStars.vue';
 import VerificationBadges from '@/Components/VerificationBadges.vue';
 import { Link } from '@inertiajs/vue3';
@@ -124,7 +133,7 @@ const verificationItems = computed(() => [
         title: 'Documento de identidad',
         description: props.trust.identity_status === 'pending'
             ? 'Tu documento está en revisión por el equipo de Mi Ropa.'
-            : 'Badge opcional: sube tu cédula y un admin la aprueba.',
+            : 'Verificación opcional: sube frente y reverso de tu documento para obtener el badge ✓ Identidad.',
         done: props.trust.identity_verified,
         pending: props.trust.identity_status === 'pending',
         action: props.trust.identity_verified || props.trust.identity_status === 'pending'

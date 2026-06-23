@@ -5,13 +5,19 @@ namespace App\Http\Controllers;
 use App\Actions\Listing\CreateListingAction;
 use App\Http\Requests\Listing\StoreListingRequest;
 use App\Http\Requests\Listing\UpdateListingRequest;
-use App\Models\Conversation;
-use App\Models\Category;
+use App\Models\Brand;
 use App\Models\Condition;
+use App\Models\Conversation;
 use App\Models\Listing;
 use App\Models\ListingImage;
 use App\Models\Location;
 use App\Services\ImageUploadService;
+use App\Support\CategoryCatalog;
+use App\Support\CategoryVisuals;
+use App\Support\FashionConditions;
+use App\Support\FashionPublishCatalog;
+use App\Support\FashionPublishContext;
+use App\Support\ListingDisplay;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -20,11 +26,19 @@ class ListingController extends Controller
 {
     public function create(): Response
     {
+        $catalog = CategoryCatalog::forPublishing();
+
         return Inertia::render('Listings/Create', [
-            'categories' => Category::whereNull('parent_id')
-                ->with('children')
-                ->orderBy('position')
-                ->get(['id', 'name', 'icon', 'parent_id']),
+            'fashionCategories' => $catalog['fashion'],
+            'otherCategories' => $catalog['other'],
+            'categories' => $catalog['fashion']->merge($catalog['other'])->values(),
+            'fashionVisuals' => CategoryVisuals::fashionByDepartment(),
+            'fashionPickerTree' => FashionPublishCatalog::pickerTree(),
+            'fashionPublishContexts' => FashionPublishContext::leafContextMap(),
+            'fashionConditions' => FashionConditions::forFilter(),
+            'brands' => Brand::query()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'slug']),
+            'fashionColors' => config('fashion_colors'),
+            'fashionListingModes' => config('fashion_publish.listing_modes'),
             'conditions' => Condition::all(['id', 'name', 'description']),
             'locations' => Location::orderBy('city')->get(['id', 'name', 'city']),
         ]);
@@ -45,7 +59,7 @@ class ListingController extends Controller
     public function show(string $slug): Response
     {
         $listing = Listing::where('slug', $slug)
-            ->with(['category', 'condition', 'location', 'images', 'attributes', 'user.profile'])
+            ->with(['category', 'condition', 'location', 'images', 'attributes', 'brand', 'user.profile'])
             ->whereIn('status', ['active', 'reserved', 'sold'])
             ->firstOrFail();
 
@@ -54,7 +68,7 @@ class ListingController extends Controller
         $relatedListings = Listing::where('category_id', $listing->category_id)
             ->where('id', '!=', $listing->id)
             ->where('status', 'active')
-            ->with(['primaryImage', 'condition', 'location'])
+            ->with(['primaryImage', 'condition', 'location', 'category'])
             ->latest('published_at')
             ->take(4)
             ->get();
@@ -62,8 +76,10 @@ class ListingController extends Controller
         $contact = null;
         if (auth()->check()) {
             $user = auth()->user();
+            $saleMode = $listing->category->sale_mode ?? 'marketplace';
             $contact = [
                 'is_owner' => $user->id === $listing->user_id,
+                'can_purchase' => $saleMode === 'marketplace',
                 'conversation_id' => Conversation::query()
                     ->where('listing_id', $listing->id)
                     ->where(function ($q) use ($user) {
@@ -77,7 +93,7 @@ class ListingController extends Controller
         }
 
         return Inertia::render('Listings/Show', [
-            'listing' => array_merge($listing->toArray(), [
+            'listing' => array_merge(ListingDisplay::forShowPage($listing), [
                 'seller' => [
                     'name' => $listing->user->name,
                     'username' => $listing->user->username,
@@ -94,6 +110,8 @@ class ListingController extends Controller
         $this->authorize('update', $listing);
 
         $listing->load(['images', 'attributes', 'category.parent']);
+
+        $catalog = CategoryCatalog::forPublishing();
 
         return Inertia::render('Listings/Edit', [
             'listing' => [
@@ -113,10 +131,10 @@ class ListingController extends Controller
                     'is_primary' => $image->is_primary,
                 ])->values(),
             ],
-            'categories' => Category::whereNull('parent_id')
-                ->with('children')
-                ->orderBy('position')
-                ->get(['id', 'name', 'icon', 'parent_id']),
+            'fashionCategories' => $catalog['fashion'],
+            'otherCategories' => $catalog['other'],
+            'categories' => $catalog['fashion']->merge($catalog['other'])->values(),
+            'fashionVisuals' => CategoryVisuals::fashionByDepartment(),
             'conditions' => Condition::all(['id', 'name']),
             'locations' => Location::orderBy('city')->get(['id', 'name', 'city']),
         ]);
