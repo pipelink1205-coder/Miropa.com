@@ -30,6 +30,35 @@ class UserSeeder extends Seeder
             'member_since' => now()->subYear(),
         ]);
 
+        // Usuario comprador/vendedor normal (no admin)
+        $buyer = User::query()->firstOrCreate(
+            ['email' => 'comprador@marketplace.test'],
+            [
+                'name' => 'María Compradora',
+                'username' => 'maria_compradora',
+                'password' => bcrypt('password'),
+                'phone' => '3001234567',
+                'phone_verified_at' => now(),
+                'email_verified_at' => now(),
+                'is_verified' => true,
+                'verification_level' => 'phone',
+                'is_admin' => false,
+                'status' => 'active',
+            ],
+        );
+
+        Profile::query()->firstOrCreate(
+            ['user_id' => $buyer->id],
+            [
+                'location_id' => Location::first()?->id,
+                'rating_avg' => 4.2,
+                'ratings_count' => 3,
+                'sales_count' => 2,
+                'purchases_count' => 7,
+                'member_since' => now()->subMonths(3),
+            ],
+        );
+
         // 9 usuarios aleatorios con perfil
         User::factory(9)->create()->each(function (User $user) {
             Profile::factory()->create(['user_id' => $user->id]);

@@ -130,14 +130,18 @@
                             </template>
                             <template v-else>
                                 <button
-                                    v-if="contact?.can_purchase"
+                                    v-if="contact?.can_purchase && $page.props.features?.checkout_enabled"
                                     type="button"
-                                    disabled
-                                    class="w-full bg-indigo-100 text-indigo-400 py-3 rounded-xl font-semibold mb-2 cursor-not-allowed"
-                                    title="Compra con protección Mi Ropa — disponible pronto"
+                                    class="w-full bg-accent text-white py-3 rounded-xl font-semibold mb-2 hover:bg-accent-hover transition"
                                 >
                                     Comprar con Mi Ropa
                                 </button>
+                                <p
+                                    v-else-if="contact?.can_purchase"
+                                    class="mb-2 rounded-xl border border-zinc-200 bg-surface-muted px-4 py-3 text-center text-sm text-ink-secondary"
+                                >
+                                    Compra protegida — próximamente. Coordina por chat mientras tanto.
+                                </p>
                                 <Link
                                     v-if="contact?.conversation_id"
                                     :href="`/mensajes/${contact.conversation_id}`"
@@ -154,8 +158,12 @@
                                     Contactar vendedor
                                 </button>
                             </template>
-                            <button class="w-full border border-gray-200 py-3 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition text-sm">
-                                {{ listing.is_favorited ? '❤️ En favoritos' : '🤍 Agregar a favoritos' }}
+                            <button
+                                type="button"
+                                class="w-full border border-zinc-200 py-3 rounded-xl font-semibold text-ink transition text-sm hover:bg-surface-muted"
+                                @click="toggleFavorite"
+                            >
+                                {{ isFavorited ? '❤️ En favoritos' : '🤍 Agregar a favoritos' }}
                             </button>
                         </template>
                         <template v-else>
@@ -242,7 +250,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import ListingCard from '@/Components/ListingCard.vue';
 import SaleModeBadge from '@/Components/SaleModeBadge.vue';
 import SellerTrust from '@/Components/SellerTrust.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, router, useForm } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -256,6 +264,20 @@ const isClassified = computed(
 );
 
 const showContactModal = ref(false);
+const isFavorited = ref(props.listing.is_favorited ?? false);
+
+watch(() => props.listing.is_favorited, (value) => {
+    isFavorited.value = value ?? false;
+});
+
+function toggleFavorite() {
+    router.post(`/anuncios/${props.listing.slug}/favorito`, {}, {
+        preserveScroll: true,
+        onSuccess: () => {
+            isFavorited.value = ! isFavorited.value;
+        },
+    });
+}
 
 const contactForm = useForm({
     body: 'Hola, me interesa este artículo. ¿Sigue disponible?',

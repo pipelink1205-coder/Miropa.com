@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Listing;
 
 use App\Support\FashionListingRules;
+use App\Support\ListingUniverses;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 
@@ -30,15 +31,23 @@ class StoreListingRequest extends FormRequest
             'attributes.*.value' => ['required_with:attributes', 'string', 'max:200'],
             'images' => ['nullable', 'array', 'max:8'],
             'images.*' => ['image', 'mimes:jpeg,png,webp', 'max:5120'],
-        ], FashionListingRules::baseRules());
+        ], FashionListingRules::baseRules(), ListingUniverses::rules());
     }
 
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $validator): void {
+            $categoryId = $this->integer('category_id') ?: null;
+
             FashionListingRules::validateFashionFields(
                 $validator,
-                $this->integer('category_id') ?: null,
+                $categoryId,
+                $this->all(),
+            );
+
+            ListingUniverses::validateForCategory(
+                $validator,
+                $categoryId,
                 $this->all(),
             );
         });

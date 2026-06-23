@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             UniverseSeeder::class,
             ImpactFactorSeeder::class,
             UserSeeder::class,
-            ListingSeeder::class,
+            FashionListingSeeder::class,
             TransactionReviewSeeder::class,
         ]);
     }

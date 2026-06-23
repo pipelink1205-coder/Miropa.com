@@ -201,11 +201,37 @@
                         </div>
                         <p v-if="form.errors.condition_id" class="mt-1 text-xs text-red-600">{{ form.errors.condition_id }}</p>
                     </div>
+
+                    <UniverseSelector
+                        v-if="hasFashionUniverses"
+                        v-model="form.universe_ids"
+                        :universes="availableUniverses"
+                        :error="form.errors.universe_ids"
+                        class="border-t border-zinc-100 pt-6"
+                    />
                 </div>
 
                 <!-- MODA paso 4 / GENERAL paso 2: Precio y datos -->
                 <div v-if="(isFashion && step === 4) || (!isFashion && step === 2)" class="space-y-4">
                     <h2 class="font-bold text-ink">{{ isFashion ? 'Precio y publicación' : 'Datos del artículo' }}</h2>
+
+                    <div
+                        v-if="isFashion"
+                        id="universos-publicar"
+                        class="rounded-xl border-2 border-accent/30 bg-accent-soft p-4 shadow-sm"
+                    >
+                        <UniverseSelector
+                            v-if="hasFashionUniverses"
+                            v-model="form.universe_ids"
+                            :universes="availableUniverses"
+                            :error="form.errors.universe_ids"
+                        />
+                        <p v-else class="text-sm text-ink-secondary">
+                            No hay universos disponibles. Ejecuta
+                            <code class="rounded bg-white/80 px-1 text-ink">php artisan db:seed --class=UniverseSeeder</code>
+                            y recarga esta página.
+                        </p>
+                    </div>
 
                     <div>
                         <label class="text-sm font-medium text-ink">Título</label>
@@ -289,6 +315,10 @@
                             <dt class="text-ink-secondary">Precio</dt>
                             <dd class="font-medium text-ink">${{ Number(form.price || 0).toLocaleString('es-CO') }}</dd>
                         </div>
+                        <div v-if="selectedUniverseLabels.length" class="flex justify-between gap-4 border-b border-zinc-100 py-2">
+                            <dt class="text-ink-secondary">Universos</dt>
+                            <dd class="text-right font-medium text-ink">{{ selectedUniverseLabels.join(', ') }}</dd>
+                        </div>
                         <div class="flex justify-between gap-4 py-2">
                             <dt class="text-ink-secondary">Fotos</dt>
                             <dd class="font-medium text-ink">{{ previews.length }}</dd>
@@ -320,7 +350,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import FashionCategoryPicker from '@/Components/Fashion/FashionCategoryPicker.vue';
 import FashionColorSwatches from '@/Components/Fashion/FashionColorSwatches.vue';
 import FashionSizeChips from '@/Components/Fashion/FashionSizeChips.vue';
-import { useForm } from '@inertiajs/vue3';
+import UniverseSelector from '@/Components/Fashion/UniverseSelector.vue';
+import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
@@ -330,10 +361,22 @@ const props = defineProps({
     fashionConditions: { type: Array, default: () => [] },
     fashionColors: { type: Array, default: () => [] },
     fashionListingModes: { type: Array, default: () => [] },
+    fashionUniverses: { type: Array, default: () => [] },
     brands: { type: Array, default: () => [] },
     otherCategories: { type: Array, default: () => [] },
     conditions: Array,
     locations: Array,
+});
+
+const page = usePage();
+
+/** Props de página o shared global (HandleInertiaRequests) */
+const availableUniverses = computed(() => {
+    if (props.fashionUniverses?.length) {
+        return props.fashionUniverses;
+    }
+
+    return page.props.fashionUniverses ?? [];
 });
 
 const vertical = ref('fashion');
@@ -347,6 +390,7 @@ const fashionSteps = ['Qué vendes', 'Fotos', 'Detalles', 'Precio', 'Revisión']
 const generalSteps = ['Categoría', 'Datos', 'Fotos'];
 
 const isFashion = computed(() => vertical.value === 'fashion');
+const hasFashionUniverses = computed(() => availableUniverses.value.length > 0);
 const activeSteps = computed(() => (isFashion.value ? fashionSteps : generalSteps));
 const maxStep = computed(() => activeSteps.value.length);
 
@@ -371,6 +415,12 @@ const brandLabel = computed(() => {
 
     return form.brand_name;
 });
+
+const selectedUniverseLabels = computed(() =>
+    availableUniverses.value
+        .filter(u => form.universe_ids.map(Number).includes(Number(u.id)))
+        .map(u => u.name),
+);
 
 const otherCats = computed(() => props.otherCategories ?? []);
 
@@ -399,6 +449,7 @@ const form = useForm({
     },
     status: 'draft',
     images: [],
+    universe_ids: [],
 });
 
 function defaultContext() {
@@ -420,6 +471,7 @@ function setVertical(v) {
     vertical.value = v;
     step.value = 1;
     form.category_id = null;
+    form.universe_ids = [];
     selectedParent.value = null;
     form.clearErrors();
 }

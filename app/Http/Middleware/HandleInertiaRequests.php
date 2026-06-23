@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Universe;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,6 +44,13 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
                 'dev_code' => $request->session()->get('dev_code'),
             ],
+            'features' => [
+                'checkout_enabled' => (bool) config('marketplace.checkout_enabled'),
+            ],
+            'fashionUniverses' => fn () => Universe::query()
+                ->where('is_active', true)
+                ->orderBy('position')
+                ->get(['id', 'name', 'slug', 'accent_color', 'description']),
         ]);
     }
 }

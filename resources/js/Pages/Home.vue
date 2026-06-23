@@ -94,15 +94,11 @@
                     <h3 class="text-sm font-semibold uppercase tracking-wider text-accent">Universos</h3>
                     <p class="mt-1 text-sm text-ink-secondary">Descubre por intención, no solo por categoría.</p>
                     <div class="mt-4 flex flex-wrap gap-2">
-                        <Link
+                        <UniverseChip
                             v-for="universe in fashionUniverses"
                             :key="universe.slug"
-                            :href="`/moda/universos/${universe.slug}`"
-                            class="rounded-full border px-4 py-2 text-sm font-medium transition hover:-translate-y-0.5 hover:shadow-md"
-                            :style="{ borderColor: universe.accent_color + '40', color: universe.accent_color }"
-                        >
-                            {{ universe.name }}
-                        </Link>
+                            :universe="universe"
+                        />
                     </div>
                 </div>
             </div>
@@ -254,6 +250,7 @@ import ListingCard from '@/Components/ListingCard.vue';
 import SectionHeader from '@/Components/SectionHeader.vue';
 import SellerCard from '@/Components/SellerCard.vue';
 import TrustBar from '@/Components/TrustBar.vue';
+import UniverseChip from '@/Components/Fashion/UniverseChip.vue';
 import VisualCategoryCard from '@/Components/VisualCategoryCard.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';

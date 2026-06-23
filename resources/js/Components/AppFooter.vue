@@ -23,8 +23,9 @@
                     <h3 class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Comprar</h3>
                     <ul class="mt-4 space-y-3">
                         <li><Link href="/anuncios" class="text-sm text-zinc-400 transition hover:text-white">Explorar anuncios</Link></li>
-                        <li><Link href="/anuncios?sort=popular" class="text-sm text-zinc-400 transition hover:text-white">Más populares</Link></li>
-                        <li><Link href="/anuncios?category=ropa-y-accesorios" class="text-sm text-zinc-400 transition hover:text-white">Moda y accesorios</Link></li>
+                        <li><Link href="/moda/mujer" class="text-sm text-zinc-400 transition hover:text-white">Moda — Mujer</Link></li>
+                        <li><Link href="/moda/hombre" class="text-sm text-zinc-400 transition hover:text-white">Moda — Hombre</Link></li>
+                        <li><Link href="/moda/ninos" class="text-sm text-zinc-400 transition hover:text-white">Moda — Niños</Link></li>
                     </ul>
                 </div>
 
@@ -32,6 +33,7 @@
                 <div>
                     <h3 class="text-sm font-semibold uppercase tracking-wider text-zinc-300">Vender</h3>
                     <ul class="mt-4 space-y-3">
+                        <li><Link href="/como-funciona" class="text-sm text-zinc-400 transition hover:text-white">Cómo funciona</Link></li>
                         <li><Link href="/listings/create" class="text-sm text-zinc-400 transition hover:text-white">Publicar anuncio</Link></li>
                         <li><Link href="/register" class="text-sm text-zinc-400 transition hover:text-white">Crear cuenta</Link></li>
                         <li><Link href="/dashboard" class="text-sm text-zinc-400 transition hover:text-white">Mi panel</Link></li>
@@ -53,9 +55,11 @@
                 <p class="text-sm text-zinc-500">
                     © {{ year }} {{ brand.name }}. Todos los derechos reservados.
                 </p>
-                <p class="text-sm text-zinc-500">
-                    {{ brand.domain }}
-                </p>
+                <div class="flex flex-wrap items-center justify-center gap-4 text-sm text-zinc-500">
+                    <Link href="/terminos" class="transition hover:text-white">Términos</Link>
+                    <Link href="/privacidad" class="transition hover:text-white">Privacidad</Link>
+                    <span>{{ brand.domain }}</span>
+                </div>
             </div>
         </div>
     </footer>
