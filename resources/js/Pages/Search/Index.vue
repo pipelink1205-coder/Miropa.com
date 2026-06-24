@@ -7,9 +7,9 @@
                     v-model="localFilters.q"
                     type="search"
                     placeholder="Buscar..."
-                    class="flex-1 px-4 py-2.5 border rounded-full text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+                    class="flex-1 px-4 py-2.5 border rounded-full text-sm focus:ring-2 focus:ring-accent/20 focus:outline-none"
                 />
-                <button type="submit" class="bg-indigo-600 text-white px-4 py-2.5 rounded-full text-sm font-medium">Buscar</button>
+                <button type="submit" class="bg-accent text-white px-4 py-2.5 rounded-full text-sm font-medium">Buscar</button>
             </form>
 
             <div class="flex gap-6">
@@ -22,9 +22,9 @@
                                 <label
                                     v-for="cat in categories"
                                     :key="cat.id"
-                                    class="flex items-center gap-2 text-sm cursor-pointer hover:text-indigo-600"
+                                    class="flex items-center gap-2 text-sm cursor-pointer hover:text-accent"
                                 >
-                                    <input type="radio" v-model="localFilters.category" :value="cat.slug" class="text-indigo-600" />
+                                    <input type="radio" v-model="localFilters.category" :value="cat.slug" class="text-accent" />
                                     <span>{{ cat.icon }} {{ cat.name }}</span>
                                 </label>
                             </div>
@@ -36,9 +36,9 @@
                                 <label
                                     v-for="cond in conditions"
                                     :key="cond.id"
-                                    class="flex items-center gap-2 text-sm cursor-pointer hover:text-indigo-600"
+                                    class="flex items-center gap-2 text-sm cursor-pointer hover:text-accent"
                                 >
-                                    <input type="radio" v-model="localFilters.condition" :value="cond.id" class="text-indigo-600" />
+                                    <input type="radio" v-model="localFilters.condition" :value="cond.id" class="text-accent" />
                                     {{ cond.name }}
                                 </label>
                             </div>
@@ -48,14 +48,14 @@
                             <label class="text-sm font-semibold text-gray-700 block mb-2">Precio</label>
                             <div class="flex items-center gap-2">
                                 <input v-model="localFilters.min_price" type="number" placeholder="Mín"
-                                    class="w-full border rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-indigo-400 focus:outline-none" />
+                                    class="w-full border rounded-lg px-2 py-1.5 text-sm focus:ring-accent/20 focus:outline-none" />
                                 <span class="text-gray-400 text-xs">—</span>
                                 <input v-model="localFilters.max_price" type="number" placeholder="Máx"
-                                    class="w-full border rounded-lg px-2 py-1.5 text-sm focus:ring-1 focus:ring-indigo-400 focus:outline-none" />
+                                    class="w-full border rounded-lg px-2 py-1.5 text-sm focus:ring-accent/20 focus:outline-none" />
                             </div>
                         </div>
 
-                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-indigo-700">
+                        <button type="submit" class="w-full bg-accent text-white py-2 rounded-lg text-sm font-medium hover:bg-accent-hover">
                             Aplicar filtros
                         </button>
                         <button type="button" @click="clearFilters" class="w-full text-gray-400 text-sm hover:text-gray-600">
@@ -72,7 +72,7 @@
                             <span v-if="filters.q"> para "<strong>{{ filters.q }}</strong>"</span>
                         </p>
                         <select v-model="localFilters.sort" @change="search"
-                            class="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
+                            class="border rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-accent/20 focus:outline-none">
                             <option value="recent">Más recientes</option>
                             <option value="price_asc">Menor precio</option>
                             <option value="price_desc">Mayor precio</option>

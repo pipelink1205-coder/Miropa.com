@@ -1,59 +1,34 @@
 <template>
-    <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-        <div class="w-full max-w-md">
-            <div class="text-center mb-8">
-                <AppLogo class="justify-center" />
-                <h2 class="mt-4 text-2xl font-bold text-gray-900">Nueva contraseña</h2>
+    <AuthLayout headline="Nueva contraseña">
+        <form class="space-y-5" @submit.prevent="submit">
+            <input v-model="form.token" type="hidden" />
+
+            <div>
+                <label class="mb-1 block text-sm font-medium text-ink-secondary">Correo electrónico</label>
+                <input v-model="form.email" type="email" class="input-field" />
+                <p v-if="form.errors.email" class="mt-1 text-xs text-red-600">{{ form.errors.email }}</p>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <form @submit.prevent="submit" class="space-y-5">
-                    <input type="hidden" v-model="form.token" />
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                        <input
-                            v-model="form.email"
-                            type="email"
-                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none text-sm"
-                        />
-                        <p v-if="form.errors.email" class="text-red-500 text-xs mt-1">{{ form.errors.email }}</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña</label>
-                        <input
-                            v-model="form.password"
-                            type="password"
-                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none text-sm"
-                        />
-                        <p v-if="form.errors.password" class="text-red-500 text-xs mt-1">{{ form.errors.password }}</p>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
-                        <input
-                            v-model="form.password_confirmation"
-                            type="password"
-                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none text-sm"
-                        />
-                    </div>
-
-                    <button
-                        type="submit"
-                        :disabled="form.processing"
-                        class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
-                    >
-                        Guardar contraseña
-                    </button>
-                </form>
+            <div>
+                <label class="mb-1 block text-sm font-medium text-ink-secondary">Nueva contraseña</label>
+                <input v-model="form.password" type="password" class="input-field" />
+                <p v-if="form.errors.password" class="mt-1 text-xs text-red-600">{{ form.errors.password }}</p>
             </div>
-        </div>
-    </div>
+
+            <div>
+                <label class="mb-1 block text-sm font-medium text-ink-secondary">Confirmar contraseña</label>
+                <input v-model="form.password_confirmation" type="password" class="input-field" />
+            </div>
+
+            <button type="submit" :disabled="form.processing" class="btn-primary w-full rounded-lg py-3 disabled:opacity-50">
+                Guardar contraseña
+            </button>
+        </form>
+    </AuthLayout>
 </template>
 
 <script setup>
-import AppLogo from '@/Components/AppLogo.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { useForm } from '@inertiajs/vue3';
 
 const props = defineProps({

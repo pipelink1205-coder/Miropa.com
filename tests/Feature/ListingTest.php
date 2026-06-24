@@ -217,4 +217,34 @@ class ListingTest extends TestCase
                 )
             );
     }
+
+    public function test_owner_can_update_listing_via_web(): void
+    {
+        ['category' => $cat, 'condition' => $cond] = $this->seedBaseData();
+        $user = User::factory()->create();
+        $listing = Listing::factory()->create([
+            'user_id' => $user->id,
+            'category_id' => $cat->id,
+            'condition_id' => $cond->id,
+            'title' => 'Titulo original del anuncio',
+            'description' => 'Descripcion original con mas de veinte caracteres.',
+            'price' => 100000,
+        ]);
+
+        $this->actingAs($user)
+            ->put("/listings/{$listing->id}", [
+                'title' => 'Titulo actualizado del anuncio',
+                'description' => 'Descripcion actualizada con mas de veinte caracteres.',
+                'price' => 150000,
+                'condition_id' => $cond->id,
+                'category_id' => $cat->id,
+            ])
+            ->assertRedirect(route('listings.show', $listing->fresh()->slug));
+
+        $this->assertDatabaseHas('listings', [
+            'id' => $listing->id,
+            'title' => 'Titulo actualizado del anuncio',
+            'price' => 150000,
+        ]);
+    }
 }

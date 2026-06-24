@@ -19,7 +19,7 @@
         <span
             v-if="identity"
             title="Identidad verificada"
-            class="inline-flex items-center gap-0.5 font-medium text-indigo-700 bg-indigo-50 rounded-full"
+            class="inline-flex items-center gap-0.5 font-medium text-accent bg-accent-soft rounded-full"
             :class="compact ? 'text-[10px] px-1.5 py-0.5' : 'text-xs px-2 py-0.5'"
         >
             ✓ Identidad

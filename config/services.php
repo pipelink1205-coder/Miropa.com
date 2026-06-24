@@ -48,4 +48,20 @@ return [
         'tenant' => env('AZURE_TENANT_ID', 'common'),
     ],
 
+    'facebook' => [
+        'client_id' => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+        'redirect' => env('FACEBOOK_REDIRECT_URI', env('APP_URL').'/auth/facebook/callback'),
+    ],
+
+    'apple' => [
+        'client_id' => env('APPLE_CLIENT_ID'),
+        'client_secret' => env('APPLE_CLIENT_SECRET'),
+        'team_id' => env('APPLE_TEAM_ID'),
+        'key_id' => env('APPLE_KEY_ID'),
+        'private_key' => env('APPLE_PRIVATE_KEY'),
+        'passphrase' => env('APPLE_PASSPHRASE'),
+        'redirect' => env('APPLE_REDIRECT_URI', env('APP_URL').'/auth/apple/callback'),
+    ],
+
 ];

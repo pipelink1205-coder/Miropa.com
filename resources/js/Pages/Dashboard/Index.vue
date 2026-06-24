@@ -9,7 +9,7 @@
                 </div>
                 <Link
                     href="/listings/create"
-                    class="bg-indigo-600 text-white px-5 py-2.5 rounded-full font-semibold text-sm hover:bg-indigo-700 transition"
+                    class="bg-accent text-white px-5 py-2.5 rounded-full font-semibold text-sm hover:bg-accent-hover transition"
                 >
                     + Publicar anuncio
                 </Link>
@@ -19,7 +19,7 @@
             <div class="bg-white rounded-xl border border-gray-100 p-5 mb-8">
                 <div class="flex items-center justify-between mb-3">
                     <h2 class="text-sm font-bold text-gray-800">Tu confianza y reputación</h2>
-                    <Link href="/cuenta" class="text-xs text-indigo-600 hover:underline">Ver detalle →</Link>
+                    <Link href="/cuenta" class="text-xs text-accent hover:underline">Ver detalle →</Link>
                 </div>
                 <VerificationBadges
                     :email="trust.email_verified"
@@ -36,11 +36,11 @@
             <!-- Stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
                 <div class="bg-white rounded-xl border border-gray-100 p-4 text-center">
-                    <p class="text-3xl font-bold text-indigo-600">{{ user.profile?.sales_count ?? 0 }}</p>
+                    <p class="text-3xl font-bold text-accent">{{ user.profile?.sales_count ?? 0 }}</p>
                     <p class="text-xs text-gray-500 mt-1">Ventas</p>
                 </div>
                 <div class="bg-white rounded-xl border border-gray-100 p-4 text-center">
-                    <p class="text-3xl font-bold text-indigo-600">{{ user.profile?.purchases_count ?? 0 }}</p>
+                    <p class="text-3xl font-bold text-accent">{{ user.profile?.purchases_count ?? 0 }}</p>
                     <p class="text-xs text-gray-500 mt-1">Compras</p>
                 </div>
                 <div class="bg-white rounded-xl border border-gray-100 p-4 text-center">
@@ -59,7 +59,7 @@
             <div v-if="listings.data.length === 0" class="text-center py-16 text-gray-400">
                 <p class="text-5xl mb-3">📦</p>
                 <p class="font-medium">Todavía no tienes anuncios</p>
-                <Link href="/listings/create" class="text-indigo-600 text-sm mt-2 block hover:underline">Publica tu primer artículo</Link>
+                <Link href="/listings/create" class="text-accent text-sm mt-2 block hover:underline">Publica tu primer artículo</Link>
             </div>
 
             <div v-else class="space-y-3">
@@ -78,13 +78,13 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-gray-800 truncate">{{ listing.title }}</p>
-                        <p class="text-indigo-600 font-bold text-sm">{{ listing.price_formatted }}</p>
+                        <p class="text-accent font-bold text-sm">{{ listing.price_formatted }}</p>
                     </div>
                     <div class="flex items-center gap-2 shrink-0">
                         <span class="text-xs px-2 py-1 rounded-full font-medium" :class="statusClass(listing.status)">
                             {{ statusLabel(listing.status) }}
                         </span>
-                        <Link :href="`/listings/${listing.id}/edit`" class="text-xs text-gray-500 hover:text-indigo-600">Editar</Link>
+                        <Link :href="`/listings/${listing.id}/edit`" class="text-xs text-gray-500 hover:text-accent">Editar</Link>
                     </div>
                 </div>
             </div>
@@ -96,7 +96,7 @@
                     :key="page"
                     :href="`/dashboard?page=${page}`"
                     class="px-3 py-1 rounded-lg text-sm border"
-                    :class="page === listings.current_page ? 'bg-indigo-600 text-white border-indigo-600' : 'text-gray-600 hover:bg-gray-50'"
+                    :class="page === listings.current_page ? 'bg-accent text-white border-accent' : 'text-gray-600 hover:bg-gray-50'"
                 >
                     {{ page }}
                 </Link>

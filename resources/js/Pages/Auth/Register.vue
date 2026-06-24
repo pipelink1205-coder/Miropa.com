@@ -1,101 +1,100 @@
 <template>
-    <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-        <div class="w-full max-w-md">
-            <div class="text-center mb-8">
-                <AppLogo class="justify-center" />
-                <h2 class="mt-4 text-2xl font-bold text-gray-900">Crea tu cuenta</h2>
-            </div>
+    <AuthLayout
+        headline="Compra y vende moda de segunda vida con confianza."
+        subtitle="Regístrate con un clic. Publica, chatea y descubre prendas únicas."
+    >
+        <template v-if="!showEmail">
+            <SocialLoginButtons />
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
-                <SocialLoginButtons />
+            <p class="mt-4 text-center text-xs leading-relaxed text-ink-muted">
+                Al continuar, aceptas los
+                <Link href="/terminos" class="text-accent hover:underline" target="_blank">Términos</Link>
+                y la
+                <Link href="/privacidad" class="text-accent hover:underline" target="_blank">Política de privacidad</Link>.
+            </p>
 
-                <div class="relative my-6">
-                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200"></div></div>
-                    <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">o con email</span></div>
+            <button
+                type="button"
+                class="mt-5 w-full text-center text-sm font-semibold text-accent hover:underline"
+                @click="showEmail = true"
+            >
+                Usar correo en su lugar
+            </button>
+        </template>
+
+        <template v-else>
+            <button
+                type="button"
+                class="mb-5 text-sm text-ink-muted transition hover:text-ink"
+                @click="showEmail = false"
+            >
+                ← Volver a redes sociales
+            </button>
+
+            <form class="space-y-5" @submit.prevent="submit">
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-ink-secondary">Nombre completo</label>
+                    <input v-model="form.name" type="text" autocomplete="name" class="input-field" :class="{ 'border-red-400': form.errors.name }" />
+                    <p v-if="form.errors.name" class="mt-1 text-xs text-red-600">{{ form.errors.name }}</p>
                 </div>
 
-                <form @submit.prevent="submit" class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre completo</label>
-                        <input
-                            v-model="form.name"
-                            type="text"
-                            autocomplete="name"
-                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none text-sm"
-                            :class="{ 'border-red-400': form.errors.name }"
-                        />
-                        <p v-if="form.errors.name" class="text-red-500 text-xs mt-1">{{ form.errors.name }}</p>
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-ink-secondary">Nombre de usuario</label>
+                    <div class="flex items-center overflow-hidden rounded-lg border" :class="{ 'border-red-400': form.errors.username }">
+                        <span class="border-r border-zinc-200 bg-surface-muted px-3 py-2.5 text-sm text-ink-muted">@</span>
+                        <input v-model="form.username" type="text" class="input-field flex-1 border-0 focus:ring-0" />
                     </div>
+                    <p v-if="form.errors.username" class="mt-1 text-xs text-red-600">{{ form.errors.username }}</p>
+                </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de usuario</label>
-                        <div class="flex items-center border rounded-lg overflow-hidden" :class="{ 'border-red-400': form.errors.username }">
-                            <span class="bg-gray-50 px-3 py-2.5 text-gray-500 text-sm border-r">@</span>
-                            <input
-                                v-model="form.username"
-                                type="text"
-                                class="flex-1 px-4 py-2.5 focus:ring-2 focus:ring-inset focus:ring-indigo-400 focus:outline-none text-sm"
-                            />
-                        </div>
-                        <p v-if="form.errors.username" class="text-red-500 text-xs mt-1">{{ form.errors.username }}</p>
-                    </div>
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-ink-secondary">Correo electrónico</label>
+                    <input v-model="form.email" type="email" autocomplete="email" class="input-field" :class="{ 'border-red-400': form.errors.email }" />
+                    <p v-if="form.errors.email" class="mt-1 text-xs text-red-600">{{ form.errors.email }}</p>
+                </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-                        <input
-                            v-model="form.email"
-                            type="email"
-                            autocomplete="email"
-                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none text-sm"
-                            :class="{ 'border-red-400': form.errors.email }"
-                        />
-                        <p v-if="form.errors.email" class="text-red-500 text-xs mt-1">{{ form.errors.email }}</p>
-                    </div>
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-ink-secondary">Contraseña</label>
+                    <input v-model="form.password" type="password" autocomplete="new-password" class="input-field" :class="{ 'border-red-400': form.errors.password }" />
+                    <p v-if="form.errors.password" class="mt-1 text-xs text-red-600">{{ form.errors.password }}</p>
+                </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-                        <input
-                            v-model="form.password"
-                            type="password"
-                            autocomplete="new-password"
-                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none text-sm"
-                            :class="{ 'border-red-400': form.errors.password }"
-                        />
-                        <p v-if="form.errors.password" class="text-red-500 text-xs mt-1">{{ form.errors.password }}</p>
-                    </div>
+                <div>
+                    <label class="mb-1 block text-sm font-medium text-ink-secondary">Confirmar contraseña</label>
+                    <input v-model="form.password_confirmation" type="password" autocomplete="new-password" class="input-field" />
+                </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
-                        <input
-                            v-model="form.password_confirmation"
-                            type="password"
-                            autocomplete="new-password"
-                            class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none text-sm"
-                        />
-                    </div>
+                <label class="flex items-start gap-2 text-sm text-ink-secondary">
+                    <input v-model="form.accepts_terms" type="checkbox" class="mt-0.5 rounded text-accent" />
+                    <span>
+                        Acepto los
+                        <Link href="/terminos" class="text-accent hover:underline" target="_blank">Términos</Link>
+                        y la
+                        <Link href="/privacidad" class="text-accent hover:underline" target="_blank">Política de privacidad</Link>
+                    </span>
+                </label>
+                <p v-if="form.errors.accepts_terms" class="text-xs text-red-600">{{ form.errors.accepts_terms }}</p>
 
-                    <button
-                        type="submit"
-                        :disabled="form.processing"
-                        class="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50"
-                    >
-                        {{ form.processing ? 'Creando cuenta...' : 'Crear cuenta' }}
-                    </button>
-                </form>
+                <button type="submit" :disabled="form.processing" class="btn-primary w-full rounded-full py-3.5 disabled:opacity-50">
+                    {{ form.processing ? 'Creando cuenta...' : 'Crear cuenta' }}
+                </button>
+            </form>
+        </template>
 
-                <p class="text-center text-sm text-gray-500 mt-6">
-                    ¿Ya tienes cuenta?
-                    <Link href="/login" class="text-indigo-600 font-medium hover:underline">Inicia sesión</Link>
-                </p>
-            </div>
-        </div>
-    </div>
+        <template #footer>
+            ¿Ya tienes cuenta?
+            <Link href="/login" class="link-accent">Inicia sesión</Link>
+        </template>
+    </AuthLayout>
 </template>
 
 <script setup>
-import AppLogo from '@/Components/AppLogo.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
 import SocialLoginButtons from '@/Components/SocialLoginButtons.vue';
 import { Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
+
+const showEmail = ref(false);
 
 const form = useForm({
     name: '',
@@ -103,6 +102,7 @@ const form = useForm({
     email: '',
     password: '',
     password_confirmation: '',
+    accepts_terms: false,
 });
 
 function submit() {

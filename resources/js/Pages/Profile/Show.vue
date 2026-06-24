@@ -8,7 +8,7 @@
                     <div class="bg-white rounded-2xl border border-gray-100 p-6 sticky top-24">
                         <!-- Avatar -->
                         <div class="flex flex-col items-center text-center">
-                            <div class="w-20 h-20 rounded-full bg-indigo-100 flex items-center justify-center text-3xl font-bold text-indigo-700 mb-3">
+                            <div class="w-20 h-20 rounded-full bg-accent-soft flex items-center justify-center text-3xl font-bold text-accent mb-3">
                                 {{ profileUser.name.charAt(0).toUpperCase() }}
                             </div>
                             <h1 class="text-xl font-bold text-gray-900">{{ profileUser.name }}</h1>

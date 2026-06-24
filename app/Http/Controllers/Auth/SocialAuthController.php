@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SocialAuthController extends Controller
 {
-    private const ALLOWED_PROVIDERS = ['google', 'microsoft'];
+    private const ALLOWED_PROVIDERS = ['google', 'facebook', 'microsoft', 'apple'];
 
     public function redirect(string $provider): RedirectResponse
     {
@@ -26,6 +26,12 @@ class SocialAuthController extends Controller
         $this->ensureAllowedProvider($provider);
 
         $socialUser = Socialite::driver($this->driverName($provider))->user();
+
+        if (! $socialUser->getEmail()) {
+            return redirect()->route('login')
+                ->withErrors(['email' => 'No pudimos obtener tu correo de '.ucfirst($provider).'. Prueba con otro método o usa email.']);
+        }
+
         $user = $action->execute($provider, $socialUser);
 
         if ($user->status !== 'active') {

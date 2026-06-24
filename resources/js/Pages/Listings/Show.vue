@@ -25,7 +25,7 @@
                                 :key="img.id"
                                 @click="activeImage = img.url"
                                 class="w-16 h-16 rounded-lg overflow-hidden border-2 shrink-0"
-                                :class="activeImage === img.url ? 'border-indigo-500' : 'border-transparent'"
+                                :class="activeImage === img.url ? 'border-accent' : 'border-transparent'"
                             >
                                 <img :src="img.url" class="w-full h-full object-cover" />
                             </button>
@@ -57,7 +57,7 @@
                         <div class="mb-4">
                             <h1 class="text-xl font-bold text-gray-900 mb-1">{{ listing.title }}</h1>
                             <div class="flex items-center gap-2">
-                                <span class="text-3xl font-bold text-indigo-600">{{ listing.price_formatted }}</span>
+                                <span class="text-3xl font-bold text-accent">{{ listing.price_formatted }}</span>
                                 <span v-if="listing.is_negotiable" class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Negociable</span>
                             </div>
                             <div class="flex items-center gap-3 mt-2 text-xs text-gray-400">
@@ -115,7 +115,7 @@
                             <template v-else-if="contact?.needs_email">
                                 <Link
                                     href="/email/verify"
-                                    class="block w-full text-center bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition mb-2"
+                                    class="block w-full text-center bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition mb-2"
                                 >
                                     Verifica tu email para contactar
                                 </Link>
@@ -123,7 +123,7 @@
                             <template v-else-if="contact?.needs_phone">
                                 <Link
                                     href="/telefono/verificar"
-                                    class="block w-full text-center bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition mb-2"
+                                    class="block w-full text-center bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition mb-2"
                                 >
                                     Verifica tu celular para contactar
                                 </Link>
@@ -145,7 +145,7 @@
                                 <Link
                                     v-if="contact?.conversation_id"
                                     :href="`/mensajes/${contact.conversation_id}`"
-                                    class="block w-full text-center bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition mb-2"
+                                    class="block w-full text-center bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition mb-2"
                                 >
                                     Continuar conversación
                                 </Link>
@@ -153,7 +153,7 @@
                                     v-else
                                     type="button"
                                     @click="showContactModal = true"
-                                    class="w-full bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition mb-2"
+                                    class="w-full bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition mb-2"
                                 >
                                     Contactar vendedor
                                 </button>
@@ -167,7 +167,7 @@
                             </button>
                         </template>
                         <template v-else>
-                            <Link href="/login" class="block w-full text-center bg-indigo-600 text-white py-3 rounded-xl font-semibold hover:bg-indigo-700 transition">
+                            <Link href="/login" class="block w-full text-center bg-accent text-white py-3 rounded-xl font-semibold hover:bg-accent-hover transition">
                                 Inicia sesión para contactar
                             </Link>
                         </template>
@@ -177,7 +177,7 @@
                     <div v-if="listing.seller" class="bg-white rounded-2xl border border-gray-100 p-5">
                         <h3 class="font-bold text-gray-800 mb-3 text-sm">Vendedor</h3>
                         <Link :href="`/u/${listing.seller.username}`" class="flex items-center gap-3 hover:opacity-80">
-                            <div class="w-11 h-11 rounded-full bg-indigo-100 flex items-center justify-center font-bold text-indigo-700">
+                            <div class="w-11 h-11 rounded-full bg-accent-soft flex items-center justify-center font-bold text-accent">
                                 {{ listing.seller.name.charAt(0).toUpperCase() }}
                             </div>
                             <div>
@@ -219,7 +219,7 @@
                     <textarea
                         v-model="contactForm.body"
                         rows="4"
-                        class="w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none resize-none"
+                        class="w-full border rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-accent/20 focus:outline-none resize-none"
                         placeholder="Hola, me interesa este artículo. ¿Sigue disponible?"
                     />
                     <p v-if="contactForm.errors.body" class="text-red-500 text-xs mt-1">{{ contactForm.errors.body }}</p>
@@ -234,7 +234,7 @@
                         <button
                             type="submit"
                             :disabled="contactForm.processing || !contactForm.body.trim()"
-                            class="flex-1 bg-indigo-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-indigo-700 disabled:opacity-50"
+                            class="flex-1 bg-accent text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-accent-hover disabled:opacity-50"
                         >
                             {{ contactForm.processing ? 'Enviando...' : 'Enviar mensaje' }}
                         </button>

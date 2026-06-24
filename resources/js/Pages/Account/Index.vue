@@ -32,7 +32,7 @@
                         <Link
                             v-if="item.action"
                             :href="item.action"
-                            class="shrink-0 text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                            class="shrink-0 text-xs font-semibold text-accent hover:text-accent-hover"
                         >
                             {{ item.actionLabel }}
                         </Link>
@@ -83,7 +83,7 @@
 
             <Link
                 :href="`/u/${$page.props.auth.user.username}`"
-                class="block text-center text-sm text-indigo-600 hover:underline"
+                class="block text-center text-sm text-accent hover:underline"
             >
                 Ver mi perfil público →
             </Link>

@@ -46,6 +46,10 @@ class HandleInertiaRequests extends Middleware
             ],
             'features' => [
                 'checkout_enabled' => (bool) config('marketplace.checkout_enabled'),
+                'social_auth' => [
+                    'google' => filled(config('services.google.client_id')),
+                    'facebook' => filled(config('services.facebook.client_id')),
+                ],
             ],
             'fashionUniverses' => fn () => Universe::query()
                 ->where('is_active', true)

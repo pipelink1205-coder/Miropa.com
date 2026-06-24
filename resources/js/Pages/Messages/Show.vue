@@ -12,7 +12,7 @@
                 />
                 <div class="flex-1 min-w-0">
                     <p class="font-semibold text-gray-900">{{ otherUser.name }}</p>
-                    <Link :href="route('listings.show', conversation.listing?.slug)" class="text-xs text-indigo-600 truncate hover:underline">
+                    <Link :href="route('listings.show', conversation.listing?.slug)" class="text-xs text-accent truncate hover:underline">
                         {{ conversation.listing?.title }}
                     </Link>
                 </div>
@@ -32,7 +32,7 @@
                     <div
                         class="max-w-xs lg:max-w-md px-4 py-2.5 rounded-2xl text-sm"
                         :class="msg.sender_id === auth.user.id
-                            ? 'bg-indigo-600 text-white rounded-br-sm'
+                            ? 'bg-accent text-white rounded-br-sm'
                             : 'bg-gray-100 text-gray-900 rounded-bl-sm'"
                     >
                         <p class="whitespace-pre-wrap break-words">{{ msg.body }}</p>
@@ -51,13 +51,13 @@
                     @keydown.enter.exact.prevent="send"
                     rows="1"
                     placeholder="Escribe un mensaje..."
-                    class="flex-1 resize-none border rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none max-h-32 overflow-y-auto"
+                    class="flex-1 resize-none border rounded-2xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-accent/20 focus:outline-none max-h-32 overflow-y-auto"
                     :disabled="sending"
                 />
                 <button
                     type="submit"
                     :disabled="!form.body.trim() || sending"
-                    class="bg-indigo-600 text-white rounded-full w-10 h-10 flex items-center justify-center disabled:opacity-40 hover:bg-indigo-700 shrink-0"
+                    class="bg-accent text-white rounded-full w-10 h-10 flex items-center justify-center disabled:opacity-40 hover:bg-accent-hover shrink-0"
                 >
                     <svg v-if="!sending" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

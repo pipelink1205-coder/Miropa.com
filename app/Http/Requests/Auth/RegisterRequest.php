@@ -18,6 +18,7 @@ class RegisterRequest extends FormRequest
             'username' => ['required', 'string', 'min:3', 'max:30', 'alpha_dash', 'unique:users,username'],
             'email' => ['required', 'email', 'max:200', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'accepts_terms' => ['accepted'],
         ];
     }
 
@@ -32,6 +33,7 @@ class RegisterRequest extends FormRequest
             'email.unique' => 'Ese correo electrónico ya está registrado.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
+            'accepts_terms.accepted' => 'Debes aceptar los términos y la política de privacidad.',
         ];
     }
 }

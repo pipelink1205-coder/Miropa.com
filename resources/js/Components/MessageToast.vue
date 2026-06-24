@@ -16,7 +16,7 @@
                 class="flex items-start gap-3 bg-gray-900 text-white rounded-2xl shadow-2xl px-4 py-3 hover:bg-gray-800 transition"
                 @click="dismiss"
             >
-                <div class="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-sm shrink-0">
+                <div class="w-10 h-10 rounded-full bg-accent flex items-center justify-center font-bold text-sm shrink-0">
                     {{ toast.senderName.charAt(0).toUpperCase() }}
                 </div>
                 <div class="flex-1 min-w-0">

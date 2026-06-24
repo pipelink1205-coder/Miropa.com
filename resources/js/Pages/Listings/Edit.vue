@@ -601,9 +601,9 @@ function submit(status) {
     if (!isFashion.value) {
         form.universe_ids = [];
     }
-    form.post(`/listings/${props.listing.id}`, {
-        forceFormData: true,
-        _method: 'put',
+
+    form.put(`/listings/${props.listing.id}`, {
+        forceFormData: imageFiles.value.length > 0,
     });
 }
 </script>

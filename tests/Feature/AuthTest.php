@@ -21,6 +21,7 @@ class AuthTest extends TestCase
             'email' => 'juan@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
+            'accepts_terms' => true,
         ]);
 
         $response->assertStatus(201)
@@ -41,7 +42,21 @@ class AuthTest extends TestCase
             'email' => 'juan@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
+            'accepts_terms' => true,
         ])->assertStatus(422);
+    }
+
+    public function test_register_requires_terms_acceptance(): void
+    {
+        $this->postJson('/api/v1/auth/register', [
+            'name' => 'Juan Pérez',
+            'username' => 'juan_perez',
+            'email' => 'juan@example.com',
+            'password' => 'password123',
+            'password_confirmation' => 'password123',
+            'accepts_terms' => false,
+        ])->assertStatus(422)
+            ->assertJsonValidationErrors(['accepts_terms']);
     }
 
     public function test_user_can_login(): void

@@ -9,6 +9,10 @@ class ConversationPolicy
 {
     public function view(User $user, Conversation $conversation): bool
     {
+        if ($user->is_admin && $user->status === 'active') {
+            return true;
+        }
+
         return $user->id === $conversation->buyer_id
             || $user->id === $conversation->seller_id;
     }

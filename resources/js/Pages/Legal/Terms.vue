@@ -1,37 +1,74 @@
 <template>
-    <AppLayout title="Términos de uso">
-        <div class="container-app max-w-3xl py-12 prose prose-sm prose-zinc max-w-none">
-            <h1 class="text-3xl font-bold text-ink not-prose">Términos de uso</h1>
-            <p class="mt-2 text-sm text-ink-muted not-prose">Última actualización: {{ updated }}</p>
+    <LegalPageShell title="Términos de uso" current="terms" updated="junio 2026">
+        <section>
+            <h2 class="text-base font-semibold text-ink">1. El servicio</h2>
+            <p class="mt-2">
+                {{ brandName }} es un marketplace colombiano que conecta compradores y vendedores de artículos de segunda vida,
+                con foco en moda. Facilitamos publicación, descubrimiento, chat y — cuando esté disponible — pagos con compra protegida.
+            </p>
+        </section>
 
-            <div class="mt-8 space-y-6 text-sm text-ink-secondary">
-                <section>
-                    <h2 class="text-base font-semibold text-ink">1. El servicio</h2>
-                    <p class="mt-2">Mi Ropa es un marketplace que conecta compradores y vendedores de artículos de segunda vida. Facilitamos publicación, descubrimiento y comunicación entre usuarios.</p>
-                </section>
-                <section>
-                    <h2 class="text-base font-semibold text-ink">2. Publicaciones</h2>
-                    <p class="mt-2">El vendedor es responsable de la veracidad de fotos, descripción, talla, estado y precio. Está prohibido publicar réplicas, artículos ilegales o contenido engañoso.</p>
-                </section>
-                <section>
-                    <h2 class="text-base font-semibold text-ink">3. Transacciones</h2>
-                    <p class="mt-2">En modo <strong>trato directo</strong>, la negociación y el pago ocurren fuera de la plataforma bajo responsabilidad de las partes. La <strong>compra protegida</strong> (cuando esté disponible) regirá por condiciones específicas publicadas en ese momento.</p>
-                </section>
-                <section>
-                    <h2 class="text-base font-semibold text-ink">4. Cuenta y verificación</h2>
-                    <p class="mt-2">Podemos solicitar verificación de teléfono e identidad para proteger a la comunidad. Nos reservamos el derecho de suspender cuentas que incumplan estas normas.</p>
-                </section>
-                <section>
-                    <h2 class="text-base font-semibold text-ink">5. Contacto</h2>
-                    <p class="mt-2">Para dudas legales o reportes: soporte@miropa.com</p>
-                </section>
-            </div>
-        </div>
-    </AppLayout>
+        <section>
+            <h2 class="text-base font-semibold text-ink">2. Tipos de anuncio</h2>
+            <ul class="mt-2 list-inside list-disc space-y-1">
+                <li><strong>Moda (marketplace):</strong> artículos de vestir con flujo pensado para compra en plataforma o contacto según el modo elegido.</li>
+                <li><strong>Otras categorías (trato directo):</strong> vehículos, inmuebles, etc. Solo sirven para que te contacten; no hay checkout integrado.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2 class="text-base font-semibold text-ink">3. Publicaciones</h2>
+            <p class="mt-2">
+                El vendedor es responsable de fotos, descripción, talla, color, estado y precio. Está prohibido publicar réplicas,
+                artículos robados, ilegales, engañosos o que infrinjan derechos de terceros. Podemos retirar anuncios y suspender cuentas.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-base font-semibold text-ink">4. Transacciones y pagos</h2>
+            <p class="mt-2">
+                En <strong>trato directo</strong>, la negociación, el pago y la entrega ocurren fuera de {{ brandName }}, bajo responsabilidad de las partes.
+                La <strong>compra protegida</strong> (cuando esté activa) se regirá por condiciones específicas publicadas en ese momento, incluyendo comisiones aplicables.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-base font-semibold text-ink">5. Cuenta y verificación</h2>
+            <p class="mt-2">
+                Podemos exigir verificación de correo, teléfono e identidad para proteger a la comunidad. Los datos de verificación se tratan según nuestra
+                <Link href="/privacidad" class="text-accent hover:underline">Política de privacidad</Link>.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-base font-semibold text-ink">6. Conducta y moderación</h2>
+            <p class="mt-2">
+                No toleramos acoso, spam, fraude ni uso fraudulento del chat. Los usuarios pueden reportar anuncios; revisamos reportes y aplicamos medidas
+                que incluyen advertencias, suspensión o cierre de cuenta.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-base font-semibold text-ink">7. Limitación de responsabilidad</h2>
+            <p class="mt-2">
+                {{ brandName }} actúa como intermediario tecnológico. No garantizamos la calidad de los artículos ni la conducta de los usuarios,
+                salvo lo expresamente previsto en compra protegida cuando esté operativa.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="text-base font-semibold text-ink">8. Cambios y contacto</h2>
+            <p class="mt-2">
+                Podemos actualizar estos términos; la fecha de vigencia aparece arriba. Para dudas legales: <a href="mailto:soporte@miropa.com" class="text-accent hover:underline">soporte@miropa.com</a>.
+            </p>
+        </section>
+    </LegalPageShell>
 </template>
 
 <script setup>
-import AppLayout from '@/Layouts/AppLayout.vue';
+import LegalPageShell from '@/Components/Legal/LegalPageShell.vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-const updated = 'junio 2026';
+const brandName = computed(() => usePage().props.brand?.name ?? 'Mi Ropa');
 </script>
