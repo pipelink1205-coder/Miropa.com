@@ -116,6 +116,11 @@ class Listing extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function tradeOffersReceived(): HasMany
+    {
+        return $this->hasMany(TradeOffer::class, 'target_listing_id');
+    }
+
     public function universes(): BelongsToMany
     {
         return $this->belongsToMany(Universe::class, 'listing_universe')->withTimestamps();

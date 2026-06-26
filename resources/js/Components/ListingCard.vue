@@ -27,8 +27,14 @@
             </span>
 
             <SaleModeBadge
-                v-if="saleMode && listing.status === 'active' && !featured"
+                v-if="saleMode && listing.status === 'active' && !featured && !listing.accepts_trade"
                 :sale-mode="saleMode"
+                compact
+                class="absolute left-3 top-3"
+            />
+
+            <TradeBadge
+                v-if="listing.accepts_trade && listing.status === 'active'"
                 compact
                 class="absolute left-3 top-3"
             />
@@ -75,6 +81,7 @@
 
 <script setup>
 import SaleModeBadge from '@/Components/SaleModeBadge.vue';
+import TradeBadge from '@/Components/TradeBadge.vue';
 import { Link } from '@inertiajs/vue3';
 import { computed } from 'vue';
 

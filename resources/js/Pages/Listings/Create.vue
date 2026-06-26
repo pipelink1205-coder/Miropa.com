@@ -277,6 +277,25 @@
                         Precio negociable
                     </label>
 
+                    <div v-if="canShowTradeOption" class="rounded-xl border border-violet-100 bg-violet-50/60 p-4">
+                        <label class="flex items-start gap-3 text-sm cursor-pointer">
+                            <input v-model="form.accepts_trade" type="checkbox" class="mt-1 rounded text-accent" />
+                            <span>
+                                <span class="font-medium text-ink">Acepto trueque</span>
+                                <span class="mt-1 block text-xs text-ink-secondary">
+                                    Otros usuarios verificados podrán proponerte intercambiar otra prenda por esta. El encuentro es presencial.
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                    <p
+                        v-else-if="tradePublish?.enabled && !tradePublish?.eligible"
+                        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900"
+                    >
+                        {{ tradePublish.ineligible_reason }}
+                        <a href="/cuenta" class="font-semibold text-accent hover:underline">Ver requisitos de trueque</a>
+                    </p>
+
                     <div>
                         <label class="text-sm font-medium text-ink">Ubicación</label>
                         <select v-model="form.location_id" class="input-search mt-1 py-2.5 text-sm">
@@ -314,6 +333,10 @@
                         <div class="flex justify-between gap-4 border-b border-zinc-100 py-2">
                             <dt class="text-ink-secondary">Precio</dt>
                             <dd class="font-medium text-ink">${{ Number(form.price || 0).toLocaleString('es-CO') }}</dd>
+                        </div>
+                        <div v-if="form.accepts_trade" class="flex justify-between gap-4 border-b border-zinc-100 py-2">
+                            <dt class="text-ink-secondary">Trueque</dt>
+                            <dd class="font-medium text-violet-700">Acepta propuestas</dd>
                         </div>
                         <div v-if="selectedUniverseLabels.length" class="flex justify-between gap-4 border-b border-zinc-100 py-2">
                             <dt class="text-ink-secondary">Universos</dt>
@@ -366,6 +389,7 @@ const props = defineProps({
     otherCategories: { type: Array, default: () => [] },
     conditions: Array,
     locations: Array,
+    tradePublish: { type: Object, default: () => ({ enabled: false, eligible: false, eligible_condition_slugs: [] }) },
 });
 
 const page = usePage();
@@ -441,6 +465,7 @@ const form = useForm({
     description: '',
     price: '',
     is_negotiable: false,
+    accepts_trade: false,
     measurements: {
         bust_cm: '',
         waist_cm: '',
@@ -450,6 +475,31 @@ const form = useForm({
     status: 'draft',
     images: [],
     universe_ids: [],
+});
+
+const selectedConditionSlug = computed(() => {
+    const pool = isFashion.value ? props.fashionConditions : props.conditions;
+    const id = Number(form.condition_id);
+
+    return pool?.find(c => Number(c.id) === id)?.slug ?? null;
+});
+
+const canShowTradeOption = computed(() => {
+    if (! props.tradePublish?.enabled || ! props.tradePublish?.eligible) {
+        return false;
+    }
+
+    if (! selectedConditionSlug.value) {
+        return false;
+    }
+
+    return props.tradePublish.eligible_condition_slugs.includes(selectedConditionSlug.value);
+});
+
+watch(selectedConditionSlug, (slug) => {
+    if (! slug || ! props.tradePublish.eligible_condition_slugs.includes(slug)) {
+        form.accepts_trade = false;
+    }
 });
 
 function defaultContext() {

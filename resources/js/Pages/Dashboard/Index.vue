@@ -53,6 +53,30 @@
                 </div>
             </div>
 
+            <!-- Trueques -->
+            <div v-if="$page.props.features?.trade_enabled" class="mb-10 rounded-xl border border-violet-100 bg-violet-50/40 p-5">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h2 class="text-sm font-bold text-violet-900">Trueques presenciales</h2>
+                        <p class="mt-1 text-xs text-violet-700">
+                            Intercambia prendas con usuarios verificados. Ana y Bruno de demo ya están listos para probar.
+                        </p>
+                    </div>
+                    <Link
+                        href="/trueques"
+                        class="inline-flex items-center justify-center rounded-full bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-700"
+                    >
+                        Ver trueques
+                        <span
+                            v-if="$page.props.pending_trade_offers_count > 0"
+                            class="ml-2 rounded-full bg-white/20 px-2 py-0.5 text-xs"
+                        >
+                            {{ $page.props.pending_trade_offers_count }} pendiente(s)
+                        </span>
+                    </Link>
+                </div>
+            </div>
+
             <!-- Mis anuncios -->
             <h2 class="text-lg font-bold text-gray-800 mb-4">Mis anuncios</h2>
 

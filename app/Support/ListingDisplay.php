@@ -106,6 +106,7 @@ class ListingDisplay
             'price' => (float) $listing->price,
             'price_formatted' => $listing->price_formatted,
             'is_negotiable' => $listing->is_negotiable,
+            'accepts_trade' => (bool) $listing->accepts_trade,
             'status' => $listing->status,
             'views_count' => $listing->views_count,
             'published_at' => $listing->published_at?->diffForHumans(),
@@ -127,6 +128,7 @@ class ListingDisplay
             'condition' => $listing->condition ? [
                 'id' => $listing->condition->id,
                 'name' => $listing->condition->name,
+                'slug' => $listing->condition->slug,
             ] : null,
             'brand' => $listing->brand ? [
                 'id' => $listing->brand->id,

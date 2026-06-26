@@ -22,6 +22,23 @@
                     <div class="flex shrink-0 items-center gap-2 sm:gap-3">
                         <template v-if="$page.props.auth?.user">
                             <Link
+                                v-if="$page.props.features?.trade_enabled"
+                                href="/trueques"
+                                class="relative hidden rounded-full p-2.5 text-ink-secondary transition hover:bg-surface-muted hover:text-violet-600 sm:inline-flex"
+                                title="Trueques"
+                                aria-label="Trueques"
+                            >
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4" />
+                                </svg>
+                                <span
+                                    v-if="tradeBadgeLabel"
+                                    class="absolute -right-0.5 -top-0.5 flex h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold leading-none text-white"
+                                >
+                                    {{ tradeBadgeLabel }}
+                                </span>
+                            </Link>
+                            <Link
                                 href="/mensajes"
                                 class="relative rounded-full p-2.5 text-ink-secondary transition hover:bg-surface-muted hover:text-accent"
                                 title="Mensajes"
@@ -63,6 +80,20 @@
                                 >
                                     <Link href="/dashboard" class="block px-4 py-2.5 text-sm text-ink transition hover:bg-surface-muted" role="menuitem">Mi panel</Link>
                                     <Link href="/cuenta" class="block px-4 py-2.5 text-sm text-ink transition hover:bg-surface-muted" role="menuitem">Mi cuenta</Link>
+                                    <Link
+                                        v-if="$page.props.features?.trade_enabled"
+                                        href="/trueques"
+                                        class="flex items-center justify-between px-4 py-2.5 text-sm text-ink transition hover:bg-surface-muted"
+                                        role="menuitem"
+                                    >
+                                        <span>Trueques</span>
+                                        <span
+                                            v-if="tradeBadgeLabel"
+                                            class="flex h-[1.125rem] min-w-[1.125rem] items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white"
+                                        >
+                                            {{ tradeBadgeLabel }}
+                                        </span>
+                                    </Link>
                                     <Link href="/mensajes" class="flex items-center justify-between px-4 py-2.5 text-sm text-ink transition hover:bg-surface-muted" role="menuitem">
                                         <span>Mensajes</span>
                                         <span
@@ -112,12 +143,19 @@ import AppFooter from '@/Components/AppFooter.vue';
 import AppLogo from '@/Components/AppLogo.vue';
 import MessageToast from '@/Components/MessageToast.vue';
 import { useMessageNotifications } from '@/composables/useMessageNotifications';
-import { Link } from '@inertiajs/vue3';
-import { ref, onMounted, onUnmounted } from 'vue';
+import { Link, usePage } from '@inertiajs/vue3';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 
 defineProps({ title: String });
 
+const page = usePage();
 const { badgeLabel, toast, dismissToast } = useMessageNotifications();
+
+const tradeBadgeLabel = computed(() => {
+    const count = page.props.pending_trade_offers_count ?? 0;
+    if (count <= 0) return null;
+    return count > 9 ? '9+' : String(count);
+});
 
 const menuOpen = ref(false);
 const menuRef = ref(null);

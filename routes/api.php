@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\V1\ListingApiController;
 use App\Http\Controllers\Api\V1\PhoneVerificationApiController;
 use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\ReviewController;
+use App\Http\Controllers\Api\V1\TradeOfferController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,11 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('/transactions', [TransactionController::class, 'store'])->name('transactions.store');
             Route::patch('/transactions/{transaction}/status', [TransactionController::class, 'updateStatus'])->name('transactions.status');
             Route::post('/transactions/{transaction}/reviews', [ReviewController::class, 'store'])->name('transactions.reviews');
+
+            // Trueque
+            Route::get('/trade-offers', [TradeOfferController::class, 'index'])->name('trade-offers.index');
+            Route::post('/trade-offers', [TradeOfferController::class, 'store'])->name('trade-offers.store');
+            Route::patch('/trade-offers/{tradeOffer}/status', [TradeOfferController::class, 'updateStatus'])->name('trade-offers.status');
 
             // Reportes
             Route::post('/reports', [ReportController::class, 'store'])->name('reports.store');

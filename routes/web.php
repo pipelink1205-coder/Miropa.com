@@ -19,6 +19,7 @@ use App\Http\Controllers\ListingController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\TradeOfferController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -95,6 +96,10 @@ Route::middleware(['auth', 'verified', 'verified.phone'])->group(function () {
     Route::get('/mensajes/{conversation}/messages', [MessagesController::class, 'fetchMessages'])->name('messages.fetch');
     Route::post('/anuncios/{listing:slug}/contactar', ListingContactController::class)->name('listings.contact');
     Route::post('/anuncios/{listing:slug}/favorito', [ListingController::class, 'toggleFavorite'])->name('listings.favorite');
+
+    Route::get('/trueques', [TradeOfferController::class, 'index'])->name('trade-offers.index');
+    Route::post('/trueques', [TradeOfferController::class, 'store'])->name('trade-offers.store');
+    Route::patch('/trueques/{tradeOffer}/status', [TradeOfferController::class, 'updateStatus'])->name('trade-offers.status');
 });
 
 Route::get('/moda/{department}', [FashionController::class, 'department'])

@@ -69,6 +69,7 @@
 
                         <div class="flex flex-wrap items-center gap-2 mb-4">
                             <SaleModeBadge :sale-mode="listing.category?.sale_mode ?? 'marketplace'" />
+                            <TradeBadge v-if="listing.accepts_trade" />
                             <span class="rounded-full bg-surface-muted px-2 py-1 text-xs font-medium text-ink-secondary">
                                 {{ listing.condition?.name }}
                             </span>
@@ -105,6 +106,18 @@
                         <template v-if="$page.props.auth?.user">
                             <template v-if="contact?.is_owner">
                                 <p class="text-sm text-gray-500 text-center mb-2">Este es tu anuncio</p>
+                                <p
+                                    v-if="trade?.enabled && listing.accepts_trade"
+                                    class="mb-2 rounded-xl border border-violet-200 bg-violet-50 px-4 py-3 text-center text-sm text-violet-800"
+                                >
+                                    Aceptas propuestas de trueque en este anuncio.
+                                </p>
+                                <Link
+                                    :href="`/listings/${listing.id}/edit`"
+                                    class="block w-full text-center border border-gray-200 py-3 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition text-sm mb-2"
+                                >
+                                    Editar anuncio
+                                </Link>
                                 <Link
                                     href="/listings/create"
                                     class="block w-full text-center border border-gray-200 py-3 rounded-xl font-semibold text-gray-700 hover:bg-gray-50 transition text-sm mb-2"
@@ -129,6 +142,27 @@
                                 </Link>
                             </template>
                             <template v-else>
+                                <button
+                                    v-if="trade?.can_propose"
+                                    type="button"
+                                    class="w-full bg-violet-600 text-white py-3 rounded-xl font-semibold mb-2 hover:bg-violet-700 transition"
+                                    @click="showTradeModal = true"
+                                >
+                                    Proponer trueque
+                                </button>
+                                <Link
+                                    v-else-if="trade?.pending_offer"
+                                    href="/trueques"
+                                    class="block w-full text-center bg-violet-100 text-violet-800 py-3 rounded-xl font-semibold mb-2 hover:bg-violet-200 transition text-sm"
+                                >
+                                    Ver propuesta de trueque ({{ tradeStatusLabel(trade.pending_offer.status) }})
+                                </Link>
+                                <p
+                                    v-else-if="trade?.enabled && listing.accepts_trade && trade?.ineligible_reason"
+                                    class="mb-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+                                >
+                                    {{ trade.ineligible_reason }}
+                                </p>
                                 <button
                                     v-if="contact?.can_purchase && $page.props.features?.checkout_enabled"
                                     type="button"
@@ -242,6 +276,72 @@
                 </form>
             </div>
         </div>
+
+        <!-- Modal proponer trueque -->
+        <div
+            v-if="showTradeModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40"
+            @click.self="showTradeModal = false"
+        >
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+                <h3 class="text-lg font-bold text-gray-900 mb-1">Proponer trueque</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Ofrece uno de tus anuncios a cambio de <strong>{{ listing.title }}</strong>.
+                </p>
+
+                <div class="rounded-xl border border-trust/20 bg-trust-soft px-3 py-2 text-xs text-trust mb-4">
+                    El encuentro es presencial. Elige un lugar público y de día. Mi Ropa no asiste al intercambio.
+                </div>
+
+                <div class="space-y-2 mb-4">
+                    <p class="text-sm font-medium text-gray-800">Tu artículo a ofrecer</p>
+                    <label
+                        v-for="item in trade.my_active_listings"
+                        :key="item.id"
+                        class="flex cursor-pointer items-center gap-3 rounded-xl border p-3 transition"
+                        :class="selectedOfferedId === item.id ? 'border-violet-400 bg-violet-50' : 'border-gray-200 hover:border-gray-300'"
+                    >
+                        <input v-model="selectedOfferedId" type="radio" :value="item.id" class="text-accent" />
+                        <img v-if="item.primary_image" :src="item.primary_image" class="h-12 w-12 rounded-lg object-cover" alt="" />
+                        <div v-else class="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-gray-400">📷</div>
+                        <div class="min-w-0">
+                            <p class="truncate text-sm font-medium text-gray-900">{{ item.title }}</p>
+                            <p class="text-xs text-gray-500">{{ item.price_formatted }}</p>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-sm font-medium text-gray-800">Mensaje (opcional)</label>
+                    <textarea
+                        v-model="tradeMessage"
+                        rows="3"
+                        class="mt-1 w-full rounded-xl border px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent/20"
+                        placeholder="¿Te parece si nos vemos el sábado?"
+                    />
+                </div>
+
+                <p v-if="tradeError" class="text-red-600 text-xs mb-3">{{ tradeError }}</p>
+
+                <div class="flex gap-3">
+                    <button
+                        type="button"
+                        class="flex-1 border border-gray-200 py-2.5 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50"
+                        @click="showTradeModal = false"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="button"
+                        :disabled="!selectedOfferedId || tradeSubmitting"
+                        class="flex-1 bg-violet-600 text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-violet-700 disabled:opacity-50"
+                        @click="submitTradeOffer"
+                    >
+                        {{ tradeSubmitting ? 'Enviando...' : 'Enviar propuesta' }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </AppLayout>
 </template>
 
@@ -250,13 +350,16 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import ListingCard from '@/Components/ListingCard.vue';
 import SaleModeBadge from '@/Components/SaleModeBadge.vue';
 import SellerTrust from '@/Components/SellerTrust.vue';
+import TradeBadge from '@/Components/TradeBadge.vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 import { computed, ref, watch } from 'vue';
 
 const props = defineProps({
     listing:         Object,
     relatedListings: Array,
     contact:         Object,
+    trade:           Object,
 });
 
 const isClassified = computed(
@@ -264,6 +367,11 @@ const isClassified = computed(
 );
 
 const showContactModal = ref(false);
+const showTradeModal = ref(false);
+const selectedOfferedId = ref(null);
+const tradeMessage = ref('');
+const tradeSubmitting = ref(false);
+const tradeError = ref(null);
 const isFavorited = ref(props.listing.is_favorited ?? false);
 
 watch(() => props.listing.is_favorited, (value) => {
@@ -295,6 +403,50 @@ watch(showContactModal, (open) => {
         contactForm.body = 'Hola, me interesa este artículo. ¿Sigue disponible?';
     }
 });
+
+watch(showTradeModal, (open) => {
+    if (open) {
+        selectedOfferedId.value = props.trade?.my_active_listings?.[0]?.id ?? null;
+        tradeError.value = null;
+    }
+});
+
+function tradeStatusLabel(status) {
+    const labels = {
+        pending: 'pendiente',
+        accepted: 'aceptada',
+        rejected: 'rechazada',
+        cancelled: 'cancelada',
+        completed: 'completada',
+    };
+    return labels[status] ?? status;
+}
+
+async function submitTradeOffer() {
+    tradeSubmitting.value = true;
+    tradeError.value = null;
+
+    try {
+        const { data } = await axios.post('/trueques', {
+            target_listing_id: props.listing.id,
+            offered_listing_id: selectedOfferedId.value,
+            message: tradeMessage.value || null,
+        });
+
+        showTradeModal.value = false;
+
+        if (data?.data?.conversation_id) {
+            router.visit(`/mensajes/${data.data.conversation_id}`);
+            return;
+        }
+
+        router.visit('/trueques');
+    } catch (error) {
+        tradeError.value = error.response?.data?.message ?? 'No se pudo enviar la propuesta.';
+    } finally {
+        tradeSubmitting.value = false;
+    }
+}
 
 const activeImage = ref(
     props.listing.images?.find(i => i.is_primary)?.url

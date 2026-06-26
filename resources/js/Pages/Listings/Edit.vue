@@ -267,6 +267,24 @@
                         Precio negociable
                     </label>
 
+                    <div v-if="canShowTradeOption" class="rounded-xl border border-violet-100 bg-violet-50/60 p-4">
+                        <label class="flex items-start gap-3 text-sm cursor-pointer">
+                            <input v-model="form.accepts_trade" type="checkbox" class="mt-1 rounded text-accent" />
+                            <span>
+                                <span class="font-medium text-ink">Acepto trueque</span>
+                                <span class="mt-1 block text-xs text-ink-secondary">
+                                    Otros usuarios verificados podrán proponerte intercambiar otra prenda por esta.
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                    <p
+                        v-else-if="tradePublish?.enabled && !tradePublish?.eligible"
+                        class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900"
+                    >
+                        {{ tradePublish.ineligible_reason }}
+                    </p>
+
                     <div>
                         <label class="text-sm font-medium text-ink">Ubicación</label>
                         <select v-model="form.location_id" class="input-search mt-1 py-2.5 text-sm">
@@ -359,6 +377,7 @@ const props = defineProps({
     otherCategories: { type: Array, default: () => [] },
     conditions: Array,
     locations: Array,
+    tradePublish: { type: Object, default: () => ({ enabled: false, eligible: false, eligible_condition_slugs: [] }) },
 });
 
 const page = usePage();
@@ -435,6 +454,7 @@ const form = useForm({
     description: props.listing.description ?? '',
     price: props.listing.price ?? '',
     is_negotiable: props.listing.is_negotiable ?? false,
+    accepts_trade: props.listing.accepts_trade ?? false,
     measurements: {
         bust_cm: props.listing.measurements?.bust_cm ?? '',
         waist_cm: props.listing.measurements?.waist_cm ?? '',
@@ -445,6 +465,31 @@ const form = useForm({
     remove_image_ids: [],
     images: [],
     universe_ids: [...(props.listing.universe_ids ?? [])],
+});
+
+const selectedConditionSlug = computed(() => {
+    const pool = isFashion.value ? props.fashionConditions : props.conditions;
+    const id = Number(form.condition_id);
+
+    return pool?.find(c => Number(c.id) === id)?.slug ?? null;
+});
+
+const canShowTradeOption = computed(() => {
+    if (! props.tradePublish?.enabled || ! props.tradePublish?.eligible) {
+        return false;
+    }
+
+    if (! selectedConditionSlug.value) {
+        return false;
+    }
+
+    return props.tradePublish.eligible_condition_slugs.includes(selectedConditionSlug.value);
+});
+
+watch(selectedConditionSlug, (slug) => {
+    if (! slug || ! props.tradePublish.eligible_condition_slugs.includes(slug)) {
+        form.accepts_trade = false;
+    }
 });
 
 function defaultContext() {

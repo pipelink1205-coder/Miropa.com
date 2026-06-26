@@ -4,6 +4,8 @@ namespace App\Support;
 
 use App\Models\Category;
 use App\Models\Condition;
+use App\Models\User;
+use App\Services\TradeEligibilityService;
 use Illuminate\Validation\Validator;
 
 class FashionListingRules
@@ -85,6 +87,7 @@ class FashionListingRules
         ?int $conditionId,
         array $input,
         ?bool $currentAcceptsTrade = null,
+        ?User $owner = null,
     ): void {
         $acceptsTrade = array_key_exists('accepts_trade', $input)
             ? (bool) $input['accepts_trade']
@@ -121,6 +124,16 @@ class FashionListingRules
                 'accepts_trade',
                 'Solo puedes aceptar trueque en prendas nuevas o como nuevas.',
             );
+
+            return;
+        }
+
+        if ($owner !== null) {
+            $reason = app(TradeEligibilityService::class)->failureReason($owner);
+
+            if ($reason !== null) {
+                $validator->errors()->add('accepts_trade', $reason);
+            }
         }
     }
 

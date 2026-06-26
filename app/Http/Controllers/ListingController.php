@@ -17,17 +17,20 @@ use App\Services\ImageUploadService;
 use App\Support\CategoryCatalog;
 use App\Support\CategoryVisuals;
 use App\Support\FashionConditions;
+use App\Support\FashionListingRules;
 use App\Support\FashionPublishCatalog;
 use App\Support\FashionPublishContext;
 use App\Support\ListingDisplay;
-use App\Support\FashionListingRules;
 use App\Support\ListingFashionPayload;
+use App\Support\ListingTradeContext;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ListingController extends Controller
 {
+    public function __construct(private ListingTradeContext $listingTradeContext) {}
+
     public function create(): Response
     {
         $catalog = CategoryCatalog::forPublishing();
@@ -47,8 +50,9 @@ class ListingController extends Controller
                 ->where('is_active', true)
                 ->orderBy('position')
                 ->get(['id', 'name', 'slug', 'accent_color', 'description']),
-            'conditions' => Condition::all(['id', 'name', 'description']),
+            'conditions' => Condition::all(['id', 'name', 'description', 'slug']),
             'locations' => Location::orderBy('city')->get(['id', 'name', 'city']),
+            'tradePublish' => $this->listingTradeContext->publishMeta(auth()->user()),
         ]);
     }
 
@@ -73,6 +77,8 @@ class ListingController extends Controller
 
         $listing->increment('views_count');
 
+        $user = auth()->user();
+
         $relatedListings = Listing::where('category_id', $listing->category_id)
             ->where('id', '!=', $listing->id)
             ->where('status', 'active')
@@ -82,8 +88,7 @@ class ListingController extends Controller
             ->get();
 
         $contact = null;
-        if (auth()->check()) {
-            $user = auth()->user();
+        if ($user) {
             $saleMode = $listing->category->sale_mode ?? 'marketplace';
             $contact = [
                 'is_owner' => $user->id === $listing->user_id,
@@ -102,8 +107,8 @@ class ListingController extends Controller
 
         return Inertia::render('Listings/Show', [
             'listing' => array_merge(ListingDisplay::forShowPage($listing), [
-                'is_favorited' => auth()->check()
-                    && auth()->user()->favorites()->where('listing_id', $listing->id)->exists(),
+                'is_favorited' => $user
+                    && $user->favorites()->where('listing_id', $listing->id)->exists(),
                 'seller' => [
                     'name' => $listing->user->name,
                     'username' => $listing->user->username,
@@ -112,6 +117,7 @@ class ListingController extends Controller
             ]),
             'relatedListings' => $relatedListings,
             'contact' => $contact,
+            'trade' => $this->listingTradeContext->forShow($listing, $user),
         ]);
     }
 
@@ -147,6 +153,7 @@ class ListingController extends Controller
                 'description' => $listing->description,
                 'price' => $listing->price,
                 'is_negotiable' => $listing->is_negotiable,
+                'accepts_trade' => $listing->accepts_trade,
                 'status' => $listing->status,
                 'measurements' => [
                     'bust_cm' => $attrs['bust_cm'] ?? '',
@@ -175,8 +182,9 @@ class ListingController extends Controller
                 ->where('is_active', true)
                 ->orderBy('position')
                 ->get(['id', 'name', 'slug', 'accent_color', 'description']),
-            'conditions' => Condition::all(['id', 'name', 'description']),
+            'conditions' => Condition::all(['id', 'name', 'description', 'slug']),
             'locations' => Location::orderBy('city')->get(['id', 'name', 'city']),
+            'tradePublish' => $this->listingTradeContext->publishMeta(auth()->user()),
         ]);
     }
 

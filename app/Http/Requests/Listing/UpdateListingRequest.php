@@ -65,6 +65,7 @@ class UpdateListingRequest extends FormRequest
                 $this->integer('condition_id') ?: $listing->condition_id,
                 $this->all(),
                 $listing->accepts_trade,
+                $this->user(),
             );
         });
     }

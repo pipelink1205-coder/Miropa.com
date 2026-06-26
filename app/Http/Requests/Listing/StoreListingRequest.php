@@ -56,6 +56,8 @@ class StoreListingRequest extends FormRequest
                 $categoryId,
                 $this->integer('condition_id') ?: null,
                 $this->all(),
+                null,
+                $this->user(),
             );
         });
     }

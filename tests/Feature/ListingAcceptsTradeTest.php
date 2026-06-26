@@ -6,6 +6,7 @@ use App\Http\Resources\ListingResource;
 use App\Models\Category;
 use App\Models\Condition;
 use App\Models\Listing;
+use App\Models\Profile;
 use App\Models\User;
 use Database\Seeders\ConditionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,6 +22,22 @@ class ListingAcceptsTradeTest extends TestCase
         parent::setUp();
 
         $this->seed(ConditionSeeder::class);
+    }
+
+    private function tradeEligibleUser(): User
+    {
+        $user = User::factory()->verified()->create();
+
+        Profile::factory()->create([
+            'user_id' => $user->id,
+            'member_since' => now()->subDays(60),
+            'sales_count' => 2,
+            'purchases_count' => 0,
+            'ratings_count' => 0,
+            'rating_avg' => 0,
+        ]);
+
+        return $user->fresh('profile');
     }
 
     private function eligibleCondition(): Condition
@@ -48,7 +65,7 @@ class ListingAcceptsTradeTest extends TestCase
 
     public function test_cannot_enable_accepts_trade_with_ineligible_condition(): void
     {
-        $user = User::factory()->create();
+        $user = $this->tradeEligibleUser();
         $category = Category::factory()->create(['sale_mode' => 'marketplace']);
 
         $this->actingAs($user, 'sanctum')
@@ -63,7 +80,7 @@ class ListingAcceptsTradeTest extends TestCase
 
     public function test_can_enable_accepts_trade_with_eligible_condition_and_marketplace_category(): void
     {
-        $user = User::factory()->create();
+        $user = $this->tradeEligibleUser();
         $category = Category::factory()->create(['sale_mode' => 'marketplace']);
 
         $this->actingAs($user, 'sanctum')
@@ -83,7 +100,7 @@ class ListingAcceptsTradeTest extends TestCase
 
     public function test_cannot_enable_accepts_trade_on_classified_category(): void
     {
-        $user = User::factory()->create();
+        $user = $this->tradeEligibleUser();
         $category = Category::factory()->classified()->create();
 
         $this->actingAs($user, 'sanctum')
@@ -106,5 +123,27 @@ class ListingAcceptsTradeTest extends TestCase
             ->toArray(Request::create('/api/v1/listings/example', 'GET'));
 
         $this->assertTrue($payload['accepts_trade']);
+    }
+
+    public function test_ineligible_owner_cannot_enable_accepts_trade(): void
+    {
+        $user = User::factory()->phoneVerified()->create();
+        Profile::factory()->create([
+            'user_id' => $user->id,
+            'member_since' => now()->subDays(5),
+            'sales_count' => 0,
+            'purchases_count' => 0,
+        ]);
+
+        $category = Category::factory()->create(['sale_mode' => 'marketplace']);
+
+        $this->actingAs($user, 'sanctum')
+            ->postJson('/api/v1/listings', $this->listingPayload(
+                $category,
+                $this->eligibleCondition(),
+                true,
+            ))
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['accepts_trade']);
     }
 }
