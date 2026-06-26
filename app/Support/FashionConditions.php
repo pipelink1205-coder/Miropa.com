@@ -8,6 +8,12 @@ use Illuminate\Support\Collection;
 class FashionConditions
 {
     /** @return list<string> */
+    public static function tradeEligibleSlugs(): array
+    {
+        return ['nuevo-con-etiqueta', 'como-nuevo'];
+    }
+
+    /** @return list<string> */
     public static function slugs(): array
     {
         return [

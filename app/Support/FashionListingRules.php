@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Category;
+use App\Models\Condition;
 use Illuminate\Validation\Validator;
 
 class FashionListingRules
@@ -20,6 +21,7 @@ class FashionListingRules
             'size_fits_as' => ['nullable', 'string', 'max:32'],
             'listing_mode' => ['nullable', 'in:compra_protegida,trato_directo'],
             'listing_type' => ['nullable', 'in:individual,lote'],
+            'accepts_trade' => ['sometimes', 'boolean'],
             'measurements' => ['nullable', 'array'],
             'measurements.bust_cm' => ['nullable', 'numeric', 'min:0', 'max:300'],
             'measurements.waist_cm' => ['nullable', 'numeric', 'min:0', 'max:300'],
@@ -74,6 +76,51 @@ class FashionListingRules
 
         if (! empty($input['listing_mode']) && ! in_array($input['listing_mode'], ['compra_protegida', 'trato_directo'], true)) {
             $validator->errors()->add('listing_mode', 'Modo de venta no válido.');
+        }
+    }
+
+    public static function validateTradeFields(
+        Validator $validator,
+        ?int $categoryId,
+        ?int $conditionId,
+        array $input,
+        ?bool $currentAcceptsTrade = null,
+    ): void {
+        $acceptsTrade = array_key_exists('accepts_trade', $input)
+            ? (bool) $input['accepts_trade']
+            : $currentAcceptsTrade;
+
+        if (! $acceptsTrade) {
+            return;
+        }
+
+        if ($categoryId === null || $conditionId === null) {
+            $validator->errors()->add(
+                'accepts_trade',
+                'Selecciona categoría y condición para aceptar trueque.',
+            );
+
+            return;
+        }
+
+        $category = Category::query()->find($categoryId);
+
+        if ($category === null || ($category->sale_mode ?? 'marketplace') !== 'marketplace') {
+            $validator->errors()->add(
+                'accepts_trade',
+                'Solo puedes aceptar trueque en anuncios de compra en la plataforma.',
+            );
+
+            return;
+        }
+
+        $condition = Condition::query()->find($conditionId);
+
+        if ($condition === null || ! in_array($condition->slug, FashionConditions::tradeEligibleSlugs(), true)) {
+            $validator->errors()->add(
+                'accepts_trade',
+                'Solo puedes aceptar trueque en prendas nuevas o como nuevas.',
+            );
         }
     }
 

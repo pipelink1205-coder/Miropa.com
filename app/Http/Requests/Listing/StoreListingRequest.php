@@ -50,6 +50,13 @@ class StoreListingRequest extends FormRequest
                 $categoryId,
                 $this->all(),
             );
+
+            FashionListingRules::validateTradeFields(
+                $validator,
+                $categoryId,
+                $this->integer('condition_id') ?: null,
+                $this->all(),
+            );
         });
     }
 

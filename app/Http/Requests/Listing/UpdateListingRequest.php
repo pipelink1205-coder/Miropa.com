@@ -56,6 +56,16 @@ class UpdateListingRequest extends FormRequest
                 $categoryId,
                 $this->all(),
             );
+
+            $listing = $this->route('listing');
+
+            FashionListingRules::validateTradeFields(
+                $validator,
+                $categoryId,
+                $this->integer('condition_id') ?: $listing->condition_id,
+                $this->all(),
+                $listing->accepts_trade,
+            );
         });
     }
 }

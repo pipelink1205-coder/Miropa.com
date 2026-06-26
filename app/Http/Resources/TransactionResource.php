@@ -16,6 +16,7 @@ class TransactionResource extends JsonResource
             'seller' => new UserResource($this->whenLoaded('seller')),
             'amount' => $this->amount,
             'amount_formatted' => 'COP '.number_format((float) $this->amount, 0, ',', '.'),
+            'commission_amount' => $this->commission_amount,
             'status' => $this->status,
             'payment_method' => $this->payment_method,
             'shipping_method' => $this->shipping_method,

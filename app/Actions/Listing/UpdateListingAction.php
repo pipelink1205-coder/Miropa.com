@@ -2,6 +2,7 @@
 
 namespace App\Actions\Listing;
 
+use App\Models\Category;
 use App\Models\Listing;
 use App\Support\FashionListingRules;
 use App\Support\ListingFashionPayload;
@@ -25,6 +26,9 @@ class UpdateListingAction
                 'price' => $data['price'] ?? null,
                 'is_negotiable' => $data['is_negotiable'] ?? null,
                 'status' => $data['status'] ?? null,
+                'accepts_trade' => array_key_exists('accepts_trade', $data)
+                    ? (bool) $data['accepts_trade']
+                    : null,
             ], fn ($v) => ! is_null($v));
 
             if (isset($data['title']) && $data['title'] !== $listing->title) {
@@ -38,7 +42,7 @@ class UpdateListingAction
             $categoryId = $data['category_id'] ?? $listing->category_id;
             $category = $listing->category;
             if ($categoryId !== $listing->category_id) {
-                $category = \App\Models\Category::query()->find($categoryId);
+                $category = Category::query()->find($categoryId);
             }
 
             if ($category && FashionListingRules::requiresPublishAttributes($category)) {

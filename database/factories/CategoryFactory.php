@@ -26,4 +26,9 @@ class CategoryFactory extends Factory
             'sale_mode' => 'marketplace',
         ];
     }
+
+    public function classified(): static
+    {
+        return $this->state(fn () => ['sale_mode' => 'classified']);
+    }
 }

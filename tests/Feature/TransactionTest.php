@@ -16,6 +16,13 @@ class TransactionTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config(['marketplace.checkout_enabled' => true]);
+    }
+
     private function makeListing(User $seller, string $status = 'active'): Listing
     {
         return Listing::factory()->create([

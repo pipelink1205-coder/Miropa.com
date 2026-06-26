@@ -30,6 +30,7 @@ class Listing extends Model
         'color',
         'listing_mode',
         'listing_type',
+        'accepts_trade',
         'items_count',
         'is_negotiable',
         'currency',
@@ -49,6 +50,7 @@ class Listing extends Model
         return [
             'price' => 'decimal:2',
             'is_negotiable' => 'boolean',
+            'accepts_trade' => 'boolean',
             'published_at' => 'datetime',
             'sold_at' => 'datetime',
         ];

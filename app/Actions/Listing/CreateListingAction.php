@@ -30,6 +30,7 @@ class CreateListingAction
                 'color' => $data['color'] ?? null,
                 'listing_mode' => $data['listing_mode'] ?? 'compra_protegida',
                 'listing_type' => $data['listing_type'] ?? 'individual',
+                'accepts_trade' => (bool) ($data['accepts_trade'] ?? false),
                 'items_count' => ($data['listing_type'] ?? 'individual') === 'lote'
                     ? (int) ($data['items_count'] ?? 1)
                     : 1,

@@ -28,28 +28,36 @@ class CategorySeeder extends Seeder
     /** @param array{name: string, description: string, children: list<string>} $data */
     private function createGroup(array $data, string $saleMode, int $position): void
     {
-        $parent = Category::create([
-            'parent_id' => null,
-            'name' => $data['name'],
-            'slug' => Str::slug($data['name']),
-            'icon' => null,
-            'description' => $data['description'],
-            'position' => $position,
-            'is_active' => true,
-            'sale_mode' => $saleMode,
-        ]);
+        $parentSlug = Str::slug($data['name']);
 
-        foreach ($data['children'] as $childPos => $childName) {
-            Category::create([
-                'parent_id' => $parent->id,
-                'name' => $childName,
-                'slug' => Str::slug($data['name'].' '.$childName),
+        $parent = Category::updateOrCreate(
+            ['slug' => $parentSlug],
+            [
+                'parent_id' => null,
+                'name' => $data['name'],
                 'icon' => null,
-                'description' => null,
-                'position' => $childPos + 1,
+                'description' => $data['description'],
+                'position' => $position,
                 'is_active' => true,
                 'sale_mode' => $saleMode,
-            ]);
+            ],
+        );
+
+        foreach ($data['children'] as $childPos => $childName) {
+            $childSlug = Str::slug($data['name'].' '.$childName);
+
+            Category::updateOrCreate(
+                ['slug' => $childSlug],
+                [
+                    'parent_id' => $parent->id,
+                    'name' => $childName,
+                    'icon' => null,
+                    'description' => null,
+                    'position' => $childPos + 1,
+                    'is_active' => true,
+                    'sale_mode' => $saleMode,
+                ],
+            );
         }
     }
 }

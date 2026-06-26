@@ -33,6 +33,7 @@ class ListingFactory extends Factory
             'is_negotiable' => fake()->boolean(40),
             'currency' => 'COP',
             'status' => 'active',
+            'accepts_trade' => false,
             'views_count' => fake()->numberBetween(0, 500),
             'favorites_count' => fake()->numberBetween(0, 50),
             'published_at' => fake()->dateTimeBetween('-6 months'),
@@ -50,5 +51,26 @@ class ListingFactory extends Factory
             'status' => 'sold',
             'sold_at' => fake()->dateTimeBetween('-3 months'),
         ]);
+    }
+
+    public function acceptsTrade(): static
+    {
+        return $this->state(function (): array {
+            $condition = Condition::query()
+                ->where('slug', 'nuevo-con-etiqueta')
+                ->first();
+
+            if ($condition === null) {
+                $condition = Condition::factory()->create([
+                    'name' => 'Nuevo con etiqueta',
+                    'slug' => 'nuevo-con-etiqueta',
+                ]);
+            }
+
+            return [
+                'accepts_trade' => true,
+                'condition_id' => $condition->id,
+            ];
+        });
     }
 }

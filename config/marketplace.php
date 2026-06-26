@@ -13,4 +13,8 @@ return [
     */
     'checkout_enabled' => env('MARKETPLACE_CHECKOUT_ENABLED', false),
 
+    'commission' => [
+        'marketplace' => 0.05,
+    ],
+
 ];

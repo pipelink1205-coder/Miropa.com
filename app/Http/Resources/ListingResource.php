@@ -18,6 +18,7 @@ class ListingResource extends JsonResource
             'price_formatted' => '$'.number_format($this->price, 0, ',', '.'),
             'currency' => $this->currency,
             'is_negotiable' => $this->is_negotiable,
+            'accepts_trade' => (bool) $this->accepts_trade,
             'status' => $this->status,
             'views_count' => $this->views_count,
             'favorites_count' => $this->favorites_count,

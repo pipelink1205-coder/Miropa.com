@@ -26,13 +26,29 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Este anuncio no está disponible.'], 422);
         }
 
-        $transaction = DB::transaction(function () use ($request, $listing) {
+        if (! config('marketplace.checkout_enabled', false)) {
+            return response()->json([
+                'message' => 'Las compras en la plataforma no están disponibles aún.',
+            ], 422);
+        }
+
+        $listing->loadMissing('category');
+
+        if (($listing->category->sale_mode ?? 'marketplace') !== 'marketplace') {
+            return response()->json([
+                'message' => 'Este anuncio es de contacto directo y no admite compra en la plataforma.',
+            ], 422);
+        }
+
+        $commissionRate = (float) config('marketplace.commission.marketplace', 0.05);
+
+        $transaction = DB::transaction(function () use ($request, $listing, $commissionRate) {
             $transaction = Transaction::create([
                 'listing_id' => $listing->id,
                 'buyer_id' => $request->user()->id,
                 'seller_id' => $listing->user_id,
                 'amount' => $listing->price,
-                'commission_amount' => round($listing->price * 0.05, 2),
+                'commission_amount' => round($listing->price * $commissionRate, 2),
                 'status' => 'pending',
                 'payment_method' => $request->payment_method,
                 'shipping_method' => $request->shipping_method ?? 'in_person',
