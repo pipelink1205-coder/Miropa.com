@@ -26,8 +26,10 @@
             <footer class="mt-12 rounded-xl border border-zinc-200 bg-surface-muted p-5 text-xs text-ink-muted">
                 <p class="font-medium text-ink-secondary">¿Necesitas ayuda?</p>
                 <p class="mt-1">
-                    Soporte: <a href="mailto:soporte@miropa.com" class="text-accent hover:underline">soporte@miropa.com</a>
-                    · Privacidad: <a href="mailto:privacidad@miropa.com" class="text-accent hover:underline">privacidad@miropa.com</a>
+                    Soporte:
+                    <a :href="`mailto:soporte@${domain}`" class="text-accent hover:underline">soporte@{{ domain }}</a>
+                    · Privacidad:
+                    <a :href="`mailto:privacidad@${domain}`" class="text-accent hover:underline">privacidad@{{ domain }}</a>
                 </p>
             </footer>
         </div>
@@ -36,7 +38,8 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps({
     title: { type: String, required: true },
@@ -44,6 +47,8 @@ defineProps({
     updated: { type: String, default: '' },
     current: { type: String, required: true },
 });
+
+const domain = computed(() => usePage().props.brand?.domain ?? 'miropa.com.co');
 
 const navItems = [
     { key: 'how', href: '/como-funciona', label: 'Cómo funciona' },

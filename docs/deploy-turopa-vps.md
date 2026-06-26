@@ -1,6 +1,56 @@
-# Deploy Mi Ropa en VPS Hostinger — turopa.com.co
+# Deploy Mi Ropa en VPS Hostinger — miropa.com.co
 
-Guía para **vaciar la VPS**, usar el dominio **turopa.com.co** y dejar el marketplace listo en producción.
+Guía para desplegar el marketplace en la VPS. **Dominio principal:** `miropa.com.co`.
+
+> Si también tienes `turopa.com.co`, ver sección [Qué hacer con turopa.com.co](#qué-hacer-con-turopacomco) al final.
+
+---
+
+## DNS de miropa.com.co (obligatorio)
+
+En hPanel → **Dominios** → `miropa.com.co` → **DNS**:
+
+| Tipo | Nombre | Valor |
+|------|--------|-------|
+| **A** | `@` | `72.61.1.78` |
+| **CNAME** | `www` | `miropa.com.co` |
+
+Comprobar: `nslookup miropa.com.co` → `72.61.1.78`.
+
+### `.env` en VPS
+
+```env
+APP_NAME="Mi Ropa"
+APP_URL=https://miropa.com.co
+APP_DOMAIN=miropa.com.co
+MAIL_FROM_ADDRESS=noreply@miropa.com.co
+DB_PASSWORD="Colombia2026#"
+```
+
+### Nginx + SSL (root en VPS)
+
+```bash
+cp /var/www/turopa/deploy/nginx/miropa.com.co.conf /etc/nginx/sites-available/miropa.com.co
+ln -sf /etc/nginx/sites-available/miropa.com.co /etc/nginx/sites-enabled/
+rm -f /etc/nginx/sites-enabled/turopa.com.co /etc/nginx/sites-enabled/default
+nginx -t && systemctl reload nginx
+certbot --nginx -d miropa.com.co -d www.miropa.com.co
+```
+
+Como `deploy`:
+
+```bash
+cd /var/www/turopa
+php artisan config:clear && php artisan config:cache
+```
+
+Si hay **HTTP 500**, revisa: `tail -50 storage/logs/laravel.log`
+
+---
+
+## Guía original (VPS, bootstrap, MySQL)
+
+Guía para **vaciar la VPS**, instalar stack y dejar el marketplace listo en producción.
 
 ---
 
@@ -118,13 +168,16 @@ Guarda usuario, contraseña y nombre de la BD para el `.env`.
 
 ### Opción A — Git (recomendado)
 
-En la VPS como `deploy`:
+El repo es **privado**. Crea un token en GitHub → **Settings** → **Developer settings** → **Personal access tokens (classic)** → scope **`repo`**.
+
+En la VPS como root o `deploy`:
 
 ```bash
 sudo mkdir -p /var/www/turopa
 sudo chown deploy:deploy /var/www/turopa
 cd /var/www/turopa
-git clone URL_DE_TU_REPO .
+git clone https://github.com/pipelink1205-coder/Miropa.com.git .
+# Si pide credenciales: usuario = tu GitHub, contraseña = el TOKEN (no tu password)
 ```
 
 ### Opción B — ZIP desde Laragon
@@ -298,3 +351,17 @@ sudo supervisorctl restart turopa-worker
 - **4 GB RAM** aprox.: suficiente para Laravel + MySQL + Nginx al lanzar.
 - Deja `SCOUT_DRIVER=collection` hasta que instales Meilisearch.
 - Reverb/websockets: aplazar; usa `BROADCAST_CONNECTION=log` al inicio.
+
+---
+
+## Qué hacer con turopa.com.co
+
+Compraste `turopa.com.co` por error; **no hace falta usarlo** como dominio principal.
+
+| Opción | Qué hacer | Recomendación |
+|--------|-----------|---------------|
+| **A. No renovar** | hPanel → dominio → renovación automática **OFF** | Más simple; expira solo |
+| **B. Redirigir a miropa.com.co** | DNS de turopa → A `@` y `www` → `72.61.1.78`; en VPS: `deploy/nginx/turopa-redirect.conf` + certbot | Quien escriba turopa llega a Mi Ropa |
+| **C. Reembolso** | Chat Hostinger (solo primeros días) | Preguntar si aplica |
+
+**Recomendación:** opción **A** ahora; opción **B** si quieres capturar visitas por error de tipeo.

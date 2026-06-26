@@ -268,7 +268,7 @@ defineProps({
     },
 });
 
-const brand = computed(() => usePage().props.brand ?? { domain: 'miropa.com' });
+const brand = computed(() => usePage().props.brand ?? { domain: 'miropa.com.co' });
 </script>
 
 <style scoped>

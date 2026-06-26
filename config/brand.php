@@ -4,7 +4,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Marca de la aplicación (mi ropa.com)
+    | Marca de la aplicación (miropa.com.co)
     |--------------------------------------------------------------------------
     |
     | Cuando tengas el logo listo, colócalo en public/images/brand/ y define
@@ -16,7 +16,7 @@ return [
 
     'name' => env('APP_NAME', 'Mi Ropa'),
 
-    'domain' => env('APP_DOMAIN', 'miropa.com'),
+    'domain' => env('APP_DOMAIN', 'miropa.com.co'),
 
     'tagline' => env('APP_TAGLINE', 'Compra y vende ropa de segunda mano con confianza.'),
 

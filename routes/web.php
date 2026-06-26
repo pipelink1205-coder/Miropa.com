@@ -58,6 +58,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'send'])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+    Route::post('/email/verificar', [EmailVerificationController::class, 'confirm'])
+        ->middleware('throttle:6,1')
+        ->name('verification.confirm');
 
     Route::get('/telefono/verificar', [PhoneVerificationController::class, 'show'])->name('phone.verify.notice');
     Route::post('/telefono/verificar/enviar', [PhoneVerificationController::class, 'send'])

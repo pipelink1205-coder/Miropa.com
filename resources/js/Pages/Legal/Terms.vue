@@ -59,7 +59,7 @@
         <section>
             <h2 class="text-base font-semibold text-ink">8. Cambios y contacto</h2>
             <p class="mt-2">
-                Podemos actualizar estos términos; la fecha de vigencia aparece arriba. Para dudas legales: <a href="mailto:soporte@miropa.com" class="text-accent hover:underline">soporte@miropa.com</a>.
+                Podemos actualizar estos términos; la fecha de vigencia aparece arriba. Para dudas legales: <a :href="`mailto:soporte@${domain}`" class="text-accent hover:underline">soporte@{{ domain }}</a>.
             </p>
         </section>
     </LegalPageShell>
@@ -71,4 +71,5 @@ import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
 const brandName = computed(() => usePage().props.brand?.name ?? 'Mi Ropa');
+const domain = computed(() => usePage().props.brand?.domain ?? 'miropa.com.co');
 </script>

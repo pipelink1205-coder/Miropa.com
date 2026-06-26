@@ -71,7 +71,7 @@ import { computed } from 'vue';
 
 const brand = computed(() => usePage().props.brand ?? {
     name: 'Mi Ropa',
-    domain: 'miropa.com',
+    domain: 'miropa.com.co',
     tagline: 'Compra y vende con confianza.',
     logo_url: null,
 });

@@ -115,4 +115,16 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Verificación de correo por código
+    |--------------------------------------------------------------------------
+    */
+
+    'verification' => [
+        'code_length' => 6,
+        'code_expires_minutes' => 10,
+        'max_attempts' => 5,
+    ],
+
 ];

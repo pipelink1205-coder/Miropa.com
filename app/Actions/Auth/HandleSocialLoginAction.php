@@ -14,20 +14,23 @@ class HandleSocialLoginAction
     public function execute(string $provider, SocialiteUser $socialUser): User
     {
         return DB::transaction(function () use ($provider, $socialUser): User {
+            $email = $this->resolveEmail($socialUser);
+            $avatarUrl = $this->resolveAvatarUrl($socialUser);
+
             $account = SocialAccount::where('provider', $provider)
                 ->where('provider_id', $socialUser->getId())
                 ->first();
 
             if ($account) {
                 $account->update([
-                    'email' => $socialUser->getEmail(),
-                    'avatar_url' => $socialUser->getAvatar(),
+                    'email' => $email,
+                    'avatar_url' => $avatarUrl,
                 ]);
 
                 return $account->user;
             }
 
-            $user = User::where('email', $socialUser->getEmail())->first();
+            $user = User::where('email', $email)->first();
 
             if (! $user) {
                 $user = $this->createUserFromSocial($socialUser);
@@ -39,12 +42,12 @@ class HandleSocialLoginAction
                 'user_id' => $user->id,
                 'provider' => $provider,
                 'provider_id' => $socialUser->getId(),
-                'email' => $socialUser->getEmail(),
-                'avatar_url' => $socialUser->getAvatar(),
+                'email' => $email,
+                'avatar_url' => $avatarUrl,
             ]);
 
-            if ($socialUser->getAvatar() && ! $user->avatar_path) {
-                $user->update(['avatar_path' => $socialUser->getAvatar()]);
+            if ($avatarUrl && ! $user->avatar_path) {
+                $user->update(['avatar_path' => $avatarUrl]);
             }
 
             return $user->fresh();
@@ -53,16 +56,18 @@ class HandleSocialLoginAction
 
     private function createUserFromSocial(SocialiteUser $socialUser): User
     {
-        $baseUsername = Str::slug(Str::before($socialUser->getEmail() ?? $socialUser->getName(), '@'), '_');
+        $email = $this->resolveEmail($socialUser);
+        $avatarUrl = $this->resolveAvatarUrl($socialUser);
+        $baseUsername = Str::slug(Str::before($email ?? $socialUser->getName(), '@'), '_');
         $username = $this->uniqueUsername($baseUsername ?: 'usuario');
 
         $user = User::create([
             'name' => $socialUser->getName() ?: $username,
             'username' => $username,
-            'email' => $socialUser->getEmail(),
+            'email' => $email,
             'password' => null,
             'email_verified_at' => now(),
-            'avatar_path' => $socialUser->getAvatar(),
+            'avatar_path' => $avatarUrl,
         ]);
 
         Profile::create([
@@ -91,5 +96,33 @@ class HandleSocialLoginAction
         }
 
         return $username;
+    }
+
+    private function resolveEmail(SocialiteUser $socialUser): ?string
+    {
+        $email = $socialUser->getEmail();
+
+        if (filled($email)) {
+            return $email;
+        }
+
+        $raw = $socialUser->getRaw();
+
+        if (is_array($raw)) {
+            foreach (['mail', 'userPrincipalName', 'email'] as $key) {
+                if (! empty($raw[$key]) && str_contains((string) $raw[$key], '@')) {
+                    return (string) $raw[$key];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function resolveAvatarUrl(SocialiteUser $socialUser): ?string
+    {
+        $avatar = $socialUser->getAvatar();
+
+        return filled($avatar) ? Str::limit($avatar, 255, '') : null;
     }
 }

@@ -30,12 +30,19 @@
             Continuar con Microsoft
         </a>
 
-        <a href="/auth/apple/redirect" class="social-btn">
-            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+        <button
+            type="button"
+            disabled
+            class="social-btn social-btn--disabled"
+            title="Sign in with Apple estará disponible próximamente"
+            aria-disabled="true"
+        >
+            <svg class="h-5 w-5 shrink-0 opacity-50" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="currentColor" d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
             </svg>
             Continuar con Apple
-        </a>
+            <span class="text-xs font-normal text-zinc-400">(Próximamente)</span>
+        </button>
     </div>
 </template>
 
@@ -57,8 +64,16 @@
     transition: border-color 0.15s, background-color 0.15s;
 }
 
-.social-btn:hover {
+.social-btn:hover:not(:disabled) {
     border-color: #d4d4d8;
     background-color: #f4f4f5;
+}
+
+.social-btn--disabled {
+    cursor: not-allowed;
+    border-color: #f4f4f5;
+    background-color: #fafafa;
+    color: #a1a1aa;
+    box-shadow: none;
 }
 </style>

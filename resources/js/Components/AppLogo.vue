@@ -25,7 +25,7 @@ defineProps({
 
 const brand = computed(() => usePage().props.brand ?? {
     name: 'Mi Ropa',
-    domain: 'miropa.com',
+    domain: 'miropa.com.co',
     logo_url: null,
 });
 </script>

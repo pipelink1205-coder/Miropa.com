@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Notifications\ResetPasswordNotification;
-use App\Notifications\VerifyEmailNotification;
+use App\Services\EmailVerificationService;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -21,7 +21,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
 
     public function sendEmailVerificationNotification(): void
     {
-        $this->notify(new VerifyEmailNotification);
+        app(EmailVerificationService::class)->sendCode($this);
     }
 
     public function sendPasswordResetNotification($token): void

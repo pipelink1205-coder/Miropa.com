@@ -4,7 +4,7 @@
             <h2 class="text-base font-semibold text-ink">1. Responsable del tratamiento</h2>
             <p class="mt-2">
                 {{ brandName }} ({{ domain }}) trata tus datos para operar el marketplace. Contacto de privacidad:
-                <a href="mailto:privacidad@miropa.com" class="text-accent hover:underline">privacidad@miropa.com</a>.
+                <a :href="`mailto:privacidad@${domain}`" class="text-accent hover:underline">privacidad@{{ domain }}</a>.
             </p>
         </section>
 
@@ -54,7 +54,7 @@
             <h2 class="text-base font-semibold text-ink">7. Tus derechos</h2>
             <p class="mt-2">
                 Puedes acceder, corregir, actualizar o solicitar eliminación escribiendo a
-                <a href="mailto:privacidad@miropa.com" class="text-accent hover:underline">privacidad@miropa.com</a>.
+                <a :href="`mailto:privacidad@${domain}`" class="text-accent hover:underline">privacidad@{{ domain }}</a>.
                 También puedes revocar consentimientos no esenciales cuando aplique.
             </p>
         </section>
@@ -84,5 +84,5 @@ import { computed } from 'vue';
 
 const page = usePage();
 const brandName = computed(() => page.props.brand?.name ?? 'Mi Ropa');
-const domain = computed(() => page.props.brand?.domain ?? 'miropa.com');
+const domain = computed(() => page.props.brand?.domain ?? 'miropa.com.co');
 </script>

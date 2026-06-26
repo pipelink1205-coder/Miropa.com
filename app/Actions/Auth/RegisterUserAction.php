@@ -23,8 +23,6 @@ class RegisterUserAction
                 'member_since' => now(),
             ]);
 
-            $user->sendEmailVerificationNotification();
-
             return $user;
         });
     }

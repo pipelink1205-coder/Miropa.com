@@ -6,8 +6,10 @@ use App\Actions\Auth\HandleSocialLoginAction;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Contracts\Provider as SocialiteProvider;
 use Laravel\Socialite\Facades\Socialite;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Throwable;
 
 class SocialAuthController extends Controller
 {
@@ -17,15 +19,21 @@ class SocialAuthController extends Controller
     {
         $this->ensureAllowedProvider($provider);
 
-        return Socialite::driver($this->driverName($provider))
-            ->redirect();
+        return $this->socialiteDriver($provider)->redirect();
     }
 
     public function callback(string $provider, HandleSocialLoginAction $action): RedirectResponse
     {
         $this->ensureAllowedProvider($provider);
 
-        $socialUser = Socialite::driver($this->driverName($provider))->user();
+        try {
+            $socialUser = $this->socialiteDriver($provider)->user();
+        } catch (Throwable $exception) {
+            report($exception);
+
+            return redirect()->route('login')
+                ->withErrors(['email' => 'No pudimos completar el inicio con '.ucfirst($provider).'. Intenta de nuevo o usa email.']);
+        }
 
         if (! $socialUser->getEmail()) {
             return redirect()->route('login')
@@ -49,6 +57,17 @@ class SocialAuthController extends Controller
         }
 
         return redirect()->intended(route('dashboard'));
+    }
+
+    private function socialiteDriver(string $provider): SocialiteProvider
+    {
+        $driver = Socialite::driver($this->driverName($provider));
+
+        if ($provider === 'microsoft') {
+            $driver->scopes(['openid', 'profile', 'email', 'User.Read']);
+        }
+
+        return $driver;
     }
 
     private function driverName(string $provider): string
