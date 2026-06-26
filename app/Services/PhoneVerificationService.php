@@ -7,6 +7,7 @@ use App\Models\PhoneVerification;
 use App\Models\User;
 use App\Services\Sms\LogSmsSender;
 use App\Services\Sms\TwilioSmsSender;
+use App\Support\VerificationDevMode;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -74,7 +75,7 @@ class PhoneVerificationService
             "Tu código {$brand}: {$code}. Expira en ".config('sms.code_expires_minutes', 10).' minutos.'
         );
 
-        if (config('sms.driver') === 'log') {
+        if (VerificationDevMode::exposesSmsCodes()) {
             return $code;
         }
 

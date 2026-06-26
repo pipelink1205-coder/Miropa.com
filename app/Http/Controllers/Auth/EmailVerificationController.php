@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\VerifyEmailCodeRequest;
 use App\Services\EmailVerificationService;
+use App\Support\VerificationDevMode;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ class EmailVerificationController extends Controller
 
         return Inertia::render('Auth/VerifyEmail', [
             'email' => $request->user()->email,
-            'dev_mail_hint' => config('mail.default') === 'log',
+            'devMailHint' => VerificationDevMode::exposesEmailCodes(),
         ]);
     }
 

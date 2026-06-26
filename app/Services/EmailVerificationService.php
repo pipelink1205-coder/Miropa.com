@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\EmailVerification;
 use App\Models\User;
 use App\Notifications\VerifyEmailCodeNotification;
+use App\Support\VerificationDevMode;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -31,7 +32,7 @@ class EmailVerificationService
 
         $user->notify(new VerifyEmailCodeNotification($code));
 
-        if (config('mail.default') === 'log') {
+        if (VerificationDevMode::exposesEmailCodes()) {
             return $code;
         }
 
