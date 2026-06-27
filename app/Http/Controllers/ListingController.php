@@ -61,7 +61,11 @@ class ListingController extends Controller
         $listing = $action->execute($request->user(), $request->validated());
 
         if ($request->hasFile('images')) {
-            $imageService->storeListingImages($listing, $request->file('images'));
+            $imageService->storeListingImages(
+                $listing,
+                $request->file('images'),
+                (int) ($request->validated('primary_index') ?? 0),
+            );
         }
 
         return redirect()->route('listings.show', $listing->slug)
@@ -202,8 +206,23 @@ class ListingController extends Controller
                 ->each(fn (ListingImage $image) => $imageService->deleteImage($image));
         }
 
-        if ($request->hasFile('images')) {
-            $imageService->storeListingImages($listing, $request->file('images'));
+        if (! empty($data['image_order']) && ! empty($data['primary_image'])) {
+            $newImages = $request->hasFile('images')
+                ? $imageService->uploadNewImages($listing, $request->file('images'))
+                : [];
+
+            $imageService->applyImageOrder(
+                $listing,
+                $data['image_order'],
+                $data['primary_image'],
+                $newImages,
+            );
+        } elseif ($request->hasFile('images')) {
+            $imageService->storeListingImages(
+                $listing,
+                $request->file('images'),
+                (int) ($data['primary_index'] ?? 0),
+            );
         }
 
         return redirect()->route('listings.show', $listing->fresh()->slug)

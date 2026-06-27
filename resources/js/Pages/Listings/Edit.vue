@@ -71,41 +71,13 @@
                 <!-- MODA paso 2 / GENERAL paso 3: Fotos -->
                 <div v-if="(isFashion && step === 2) || (!isFashion && step === 3)">
                     <h2 class="font-bold text-ink">Fotos del artículo</h2>
-                    <ul v-if="photoTips.length" class="mt-2 list-inside list-disc text-xs text-ink-secondary">
-                        <li v-for="tip in photoTips" :key="tip">{{ tip }}</li>
-                    </ul>
-
-                    <div v-if="existingImages.length" class="mt-4 grid grid-cols-4 gap-2">
-                        <div v-for="image in existingImages" :key="image.id" class="relative aspect-square">
-                            <img :src="image.url" :alt="form.title" class="h-full w-full rounded-lg object-cover" />
-                            <button
-                                type="button"
-                                class="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
-                                @click="removeExistingImage(image.id)"
-                            >×</button>
-                            <span v-if="image.is_primary" class="absolute bottom-1 left-1 rounded bg-accent px-1 text-[10px] text-white">Principal</span>
-                        </div>
-                    </div>
-
-                    <div
-                        v-if="totalImages < 8"
-                        class="mt-4 cursor-pointer rounded-xl border-2 border-dashed border-zinc-200 p-8 text-center transition hover:border-accent"
-                        @click="$refs.fileInput.click()"
-                        @dragover.prevent
-                        @drop.prevent="onDrop"
-                    >
-                        <p class="text-3xl">📷</p>
-                        <p class="mt-2 text-sm text-ink-secondary">Arrastra fotos o haz clic · {{ totalImages }}/8 · JPG, PNG, WebP</p>
-                        <input ref="fileInput" type="file" multiple accept="image/*" class="hidden" @change="onFileChange" />
-                    </div>
-
-                    <div v-if="previews.length" class="mt-4 grid grid-cols-4 gap-2">
-                        <div v-for="(preview, i) in previews" :key="`new-${i}`" class="relative aspect-square">
-                            <img :src="preview" class="h-full w-full rounded-lg object-cover" alt="" />
-                            <button type="button" class="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white" @click="removeNewImage(i)">×</button>
-                            <span v-if="!existingImages.length && i === 0" class="absolute bottom-1 left-1 rounded bg-accent px-1 text-[10px] text-white">Principal</span>
-                        </div>
-                    </div>
+                    <ListingPhotoUploader
+                        class="mt-4"
+                        is-edit
+                        :existing-images="listing.images ?? []"
+                        :tips="photoTips"
+                        @update:payload="photoPayload = $event"
+                    />
                 </div>
 
                 <!-- MODA paso 3: Detalles -->
@@ -325,7 +297,7 @@
                         </div>
                         <div class="flex justify-between gap-4 py-2">
                             <dt class="text-ink-secondary">Fotos</dt>
-                            <dd class="font-medium text-ink">{{ totalImages }}</dd>
+                            <dd class="font-medium text-ink">{{ photoPayload?.imageOrder?.length ?? (listing.images?.length ?? 0) }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -360,6 +332,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import FashionCategoryPicker from '@/Components/Fashion/FashionCategoryPicker.vue';
 import FashionColorSwatches from '@/Components/Fashion/FashionColorSwatches.vue';
 import FashionSizeChips from '@/Components/Fashion/FashionSizeChips.vue';
+import ListingPhotoUploader from '@/Components/ListingPhotoUploader.vue';
 import UniverseSelector from '@/Components/Fashion/UniverseSelector.vue';
 import { useForm, usePage } from '@inertiajs/vue3';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -393,9 +366,7 @@ const availableUniverses = computed(() => {
 const vertical = ref(props.listing.is_fashion ? 'fashion' : 'general');
 const step = ref(1);
 const selectedParent = ref(null);
-const previews = ref([]);
-const imageFiles = ref([]);
-const existingImages = ref([...(props.listing.images ?? [])]);
+const photoPayload = ref({ files: [], removeIds: [], imageOrder: [], primaryImage: null });
 const sizeMismatch = ref(Boolean(props.listing.size_label || props.listing.size_fits_as));
 
 const fashionSteps = ['Qué vendes', 'Fotos', 'Detalles', 'Precio', 'Revisión'];
@@ -405,7 +376,6 @@ const isFashion = computed(() => vertical.value === 'fashion');
 const hasFashionUniverses = computed(() => availableUniverses.value.length > 0);
 const activeSteps = computed(() => (isFashion.value ? fashionSteps : generalSteps));
 const maxStep = computed(() => activeSteps.value.length);
-const totalImages = computed(() => existingImages.value.length + imageFiles.value.length);
 
 const publishContext = computed(() => {
     if (!form.category_id) {
@@ -464,6 +434,8 @@ const form = useForm({
     status: props.listing.status ?? 'draft',
     remove_image_ids: [],
     images: [],
+    image_order: [],
+    primary_image: '',
     universe_ids: [...(props.listing.universe_ids ?? [])],
 });
 
@@ -612,43 +584,19 @@ function nextStep() {
     step.value++;
 }
 
-function onFileChange(e) {
-    addFiles(Array.from(e.target.files));
-    e.target.value = '';
-}
-
-function onDrop(e) {
-    addFiles(Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/')));
-}
-
-function addFiles(files) {
-    const remaining = 8 - totalImages.value;
-    files.slice(0, remaining).forEach(file => {
-        imageFiles.value.push(file);
-        previews.value.push(URL.createObjectURL(file));
-    });
-}
-
-function removeNewImage(index) {
-    URL.revokeObjectURL(previews.value[index]);
-    imageFiles.value.splice(index, 1);
-    previews.value.splice(index, 1);
-}
-
-function removeExistingImage(id) {
-    existingImages.value = existingImages.value.filter(image => image.id !== id);
-    form.remove_image_ids.push(id);
-}
-
 function submit(status) {
     form.status = status;
-    form.images = imageFiles.value;
+    const payload = photoPayload.value ?? {};
+    form.images = payload.files ?? [];
+    form.remove_image_ids = payload.removeIds ?? [];
+    form.image_order = payload.imageOrder ?? [];
+    form.primary_image = payload.primaryImage ?? '';
     if (!isFashion.value) {
         form.universe_ids = [];
     }
 
     form.put(`/listings/${props.listing.id}`, {
-        forceFormData: imageFiles.value.length > 0,
+        forceFormData: (payload.files?.length ?? 0) > 0,
     });
 }
 </script>

@@ -8,8 +8,9 @@
         </div>
 
         <div v-if="$page.props.flash?.dev_code" class="rounded-lg border border-amber-100 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            <strong>Modo desarrollo:</strong> tu código es
+            <strong>SMS simulado:</strong> tu código es
             <span class="font-mono font-bold">{{ $page.props.flash.dev_code }}</span>
+            <span class="block mt-1 text-xs text-amber-700">Mientras Twilio no esté activo, el código aparece aquí en lugar del celular.</span>
         </div>
 
         <form class="space-y-4" @submit.prevent="sendCode">

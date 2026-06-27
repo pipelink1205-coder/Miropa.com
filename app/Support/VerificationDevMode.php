@@ -12,7 +12,8 @@ class VerificationDevMode
 
     public static function exposesSmsCodes(): bool
     {
-        return app()->environment('local', 'testing')
-            && config('sms.driver', 'log') === 'log';
+        // Con driver "log" no hay SMS real: mostrar el código en pantalla en cualquier entorno
+        // (local, staging o producción antes de activar Twilio).
+        return config('sms.driver', 'log') === 'log';
     }
 }

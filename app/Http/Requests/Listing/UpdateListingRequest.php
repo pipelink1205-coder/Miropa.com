@@ -36,6 +36,10 @@ class UpdateListingRequest extends FormRequest
                 'integer',
                 Rule::exists('listing_images', 'id')->where('listing_id', $this->route('listing')->id),
             ],
+            'primary_index' => ['nullable', 'integer', 'min:0'],
+            'image_order' => ['nullable', 'array'],
+            'image_order.*' => ['string', 'regex:/^(e|n):\d+$/'],
+            'primary_image' => ['nullable', 'string', 'regex:/^(e|n):\d+$/'],
         ], FashionListingRules::baseRules(), ListingUniverses::rules());
     }
 

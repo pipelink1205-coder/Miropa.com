@@ -31,6 +31,7 @@ class StoreListingRequest extends FormRequest
             'attributes.*.value' => ['required_with:attributes', 'string', 'max:200'],
             'images' => ['nullable', 'array', 'max:8'],
             'images.*' => ['image', 'mimes:jpeg,png,webp', 'max:5120'],
+            'primary_index' => ['nullable', 'integer', 'min:0'],
         ], FashionListingRules::baseRules(), ListingUniverses::rules());
     }
 
