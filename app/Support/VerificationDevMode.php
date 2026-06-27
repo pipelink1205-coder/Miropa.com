@@ -12,8 +12,20 @@ class VerificationDevMode
 
     public static function exposesSmsCodes(): bool
     {
-        // Con driver "log" no hay SMS real: mostrar el código en pantalla en cualquier entorno
-        // (local, staging o producción antes de activar Twilio).
-        return config('sms.driver', 'log') === 'log';
+        $explicit = config('sms.expose_code');
+
+        if ($explicit !== null && $explicit !== '') {
+            return filter_var($explicit, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Con driver "log" (o vacío/mal seteado en .env) no hay SMS real.
+        return self::smsUsesSimulatedDriver();
+    }
+
+    private static function smsUsesSimulatedDriver(): bool
+    {
+        $driver = config('sms.driver', 'log');
+
+        return $driver === 'log' || $driver === null || $driver === '';
     }
 }

@@ -12,7 +12,15 @@ return [
     |
     */
 
-    'driver' => env('SMS_DRIVER', 'log'),
+    // `?:` evita que un SMS_DRIVER vacío en .env rompa la detección del modo simulado.
+    'driver' => env('SMS_DRIVER') ?: 'log',
+
+    /*
+    | Forzar mostrar el código en pantalla (producción sin Twilio). null = automático
+    | (true cuando driver es log). Usar SMS_EXPOSE_CODE=true si hiciste config:cache
+    | con un valor distinto y necesitas el cuadro amarillo temporalmente.
+    */
+    'expose_code' => env('SMS_EXPOSE_CODE'),
 
     'code_length' => 6,
 
